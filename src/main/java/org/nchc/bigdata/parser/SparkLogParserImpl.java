@@ -4,10 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
-import org.nchc.bigdata.db.JobDAO;
-import org.nchc.bigdata.db.SparkJobDAO;
+import org.nchc.bigdata.model.SparkJobModel;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -38,7 +36,7 @@ public class SparkLogParserImpl implements IParser {
     private Gson gson;
     private JsonParser parser;
     private List<String> eventNames;
-    private SparkJobDAO eventLogs;
+    private SparkJobModel eventLogs;
 
 
 
@@ -47,23 +45,24 @@ public class SparkLogParserImpl implements IParser {
      * default SparkEventLogParser collect executor and task information
      * if you want to collect another event, please create another constructor for your case.
      **/
-    public SparkLogParserImpl(Configuration conf){
+    public SparkLogParserImpl(){
         this.gson = new Gson();
         this.parser = new JsonParser();
-        this.eventLogs = new SparkJobDAO(conf);
+        this.eventLogs = new SparkJobModel();
         //default event log, APP_START & APP_END & TASK_START & TASK_END
-        this.eventNames = new ArrayList<String>();
+        this.eventNames = new ArrayList<>();
         this.eventNames.add(APP_START);
         this.eventNames.add(APP_END);
+        this.eventNames.add(EXECUTOR_ADD);
         this.eventNames.add(TASK_START);
         this.eventNames.add(TASK_END);
     }
 
-    public SparkLogParserImpl(Configuration conf, List<String> eventNames){
+    public SparkLogParserImpl(List<String> eventNames){
         this.gson = new Gson();
         this.parser = new JsonParser();
-        this.eventLogs = new SparkJobDAO(conf);
-        this.eventNames = new ArrayList<String>(eventNames.size());
+        this.eventLogs = new SparkJobModel();
+        this.eventNames = new ArrayList<>(eventNames.size());
         for(String eventName: eventNames){
             this.eventNames.add(eventName);
         }
@@ -89,34 +88,34 @@ public class SparkLogParserImpl implements IParser {
                 String eventName = this.eventNames.get(i);
                 switch(eventName){
                     case JOB_START:
-                        this.eventLogs.addJobStart(this.gson.fromJson(element, SparkJobDAO.JobStart.class));
+                        this.eventLogs.addJobStart(this.gson.fromJson(element, SparkJobModel.JobStart.class));
                         break;
                     case EXECUTOR_ADD:
-                        this.eventLogs.addExecutorAdd(this.gson.fromJson(element, SparkJobDAO.ExecutorAdded.class));
+                        this.eventLogs.addExecutorAdd(this.gson.fromJson(element, SparkJobModel.ExecutorAdded.class));
                         break;
                     case TASK_START:
-                        this.eventLogs.addTaskStart(this.gson.fromJson(element, SparkJobDAO.TaskStart.class));
+                        this.eventLogs.addTaskStart(this.gson.fromJson(element, SparkJobModel.TaskStart.class));
                         break;
                     case TASK_END:
-                        this.eventLogs.addTaskEnd(this.gson.fromJson(element, SparkJobDAO.TaskEnd.class));
+                        this.eventLogs.addTaskEnd(this.gson.fromJson(element, SparkJobModel.TaskEnd.class));
                         break;
                     case APP_START:
-                        this.eventLogs.setAppStart(this.gson.fromJson(element, SparkJobDAO.AppStart.class));
+                        this.eventLogs.setAppStart(this.gson.fromJson(element, SparkJobModel.AppStart.class));
                         break;
                     case APP_END:
-                        this.eventLogs.setAppEnd(this.gson.fromJson(element, SparkJobDAO.AppEnd.class));
+                        this.eventLogs.setAppEnd(this.gson.fromJson(element, SparkJobModel.AppEnd.class));
                         break;
                     case JOB_END:
-                        this.eventLogs.addJobEnd(this.gson.fromJson(element, SparkJobDAO.JobEnd.class));
+                        this.eventLogs.addJobEnd(this.gson.fromJson(element, SparkJobModel.JobEnd.class));
                         break;
                     case STAGE_SUBMIT:
-                        this.eventLogs.addStageSubmit(this.gson.fromJson(element, SparkJobDAO.StageSubmit.class));
+                        this.eventLogs.addStageSubmit(this.gson.fromJson(element, SparkJobModel.StageSubmit.class));
                         break;
                     case BLOCKMANAGER_ADD:
-                        this.eventLogs.addBlocKManager(this.gson.fromJson(element, SparkJobDAO.BlockManager.class));
+                        this.eventLogs.addBlocKManager(this.gson.fromJson(element, SparkJobModel.BlockManager.class));
                         break;
                     case STAGE_COMPLETED:
-                        this.eventLogs.addStageComplete(this.gson.fromJson(element, SparkJobDAO.StageCompleted.class));
+                        this.eventLogs.addStageComplete(this.gson.fromJson(element, SparkJobModel.StageCompleted.class));
                 }
             }
         } else {
@@ -125,7 +124,7 @@ public class SparkLogParserImpl implements IParser {
         return true;
     }
 
-    public SparkJobDAO result(){
+    public SparkJobModel result(){
         return eventLogs;
     }
 }

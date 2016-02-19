@@ -2,13 +2,19 @@ package org.nchc.bigdata.monitor;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.nchc.bigdata.dao.JoBDAOFactory;
+import org.nchc.bigdata.dao.JobDAO;
+import org.nchc.bigdata.model.JobModel;
 import org.nchc.bigdata.parser.Reader;
-import org.nchc.bigdata.parser.SparkLogReader;
+import org.nchc.bigdata.parser.SparkFileFilter;
+import org.nchc.bigdata.parser.SparkLogParserImpl;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
-import java.util.Properties;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 
@@ -21,28 +27,25 @@ public class SparkLogMonitor extends Thread{
 
     private static Logger logger = Logger.getLogger(SparkLogMonitor.class);
     private boolean isRunning = true;
-    private Reader sparkreader= null;
-
-    public SparkLogMonitor(Configuration conf, Properties ps){
-        /**
-         * TODO: add DB info and path info
-         **/
-    }
+    private Reader sparkReader = null;
+    private JobDAO sparkJobDAO = null;
 
     public SparkLogMonitor(Configuration conf) throws IOException, SQLException {
-        sparkreader = new SparkLogReader(conf, new Path(""));
         /**
          * TODO: add DB info and path info
          **/
+        Path logPath = new Path(conf.get(""));
+        sparkReader = new Reader(conf, logPath);
+        sparkReader.setFilter(new SparkFileFilter(conf));
+        sparkReader.setParser(new SparkLogParserImpl());
+        this.sparkJobDAO = JoBDAOFactory.getSparkJobDAO(conf);
     }
 
     public void run(){
         while (isRunning) {
             try {
-
-                sparkreader.readAllFile();
-
-
+                List<JobModel> jobs = sparkReader.readAllFile();
+                sparkJobDAO.add(jobs);
                 Thread.sleep(INTERVAL);
             } catch (Exception e) {
                 StringWriter errors = new StringWriter();
@@ -50,6 +53,5 @@ public class SparkLogMonitor extends Thread{
                 logger.error(errors.toString());
             }
         }
-
     }
 }

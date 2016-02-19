@@ -6,14 +6,9 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
 import org.apache.log4j.Logger;
-import org.nchc.bigdata.db.ConnectionFactory;
-import org.nchc.bigdata.db.DBUtil;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  * Created by 1403035 on 2016/2/2.
@@ -22,8 +17,6 @@ public class SparkFileFilter implements PathFilter {
 
     private static Logger logger = Logger.getLogger(SparkFileFilter.class);
     private Configuration config;
-    private Connection connection;
-    private Statement statement;
 
     /**
      * The maximum modification time of a file to be accepted in milliseconds
@@ -36,20 +29,6 @@ public class SparkFileFilter implements PathFilter {
 
     public SparkFileFilter(Configuration config) throws SQLException {
         this.config = config;
-        String query = "INSERT INTO ...";
-        ResultSet rs = null;
-        try {
-            /*
-            connection = ConnectionFactory.getConnection(config);
-            statement = connection.createStatement();
-            rs = statement.executeQuery(query);
-            */
-
-        }finally {
-            DBUtil.close(rs);
-            DBUtil.close(statement);
-            DBUtil.close(connection);
-        }
     }
 
 

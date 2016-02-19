@@ -3,14 +3,12 @@ package org.nchc.bigdata.casterly;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileUtil;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.nchc.bigdata.db.SparkJobDAO;
+import org.nchc.bigdata.model.SparkJobModel;
 import org.nchc.bigdata.parser.*;
+import org.nchc.bigdata.parser.Reader;
 
 import java.io.*;
 import java.sql.SQLException;
@@ -20,8 +18,6 @@ public class SparkLogTest {
 //    private static Logger logger = Logger.getLogger(SparkLogTest.class);
 
     private static Log logger = LogFactory.getLog(SparkLogTest.class);
-
-
 
     private static String DEFAULTEVENTDIR = "/user/spark/applicationHistory/";
     private static String FAILLOG = "application_1452487986830_0003";
@@ -40,10 +36,11 @@ public class SparkLogTest {
     public void testFailEventLogReader() throws IOException, SQLException {
         InputStream is = SparkLogTest.class.getClass().getResourceAsStream("/spark/" + FAILLOG);
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        SparkLogReader reader = new SparkLogReader(new Configuration(), null);
-        SparkJobDAO r = reader.read(br);
-        reader.persist(r);
-        logger.info(r.calCPUHour());
+        Reader reader = new Reader(new Configuration());
+        reader.setParser(new SparkLogParserImpl());
+        SparkJobModel r = reader.read(br);
+        logger.info(r.getAppStart().getId());
+        logger.info(r.getExecutorAdd().size());
 
     }
 
@@ -51,10 +48,13 @@ public class SparkLogTest {
     public void testSuccessEventLogReader() throws IOException, SQLException {
         InputStream is = SparkLogTest.class.getClass().getResourceAsStream("/spark/" + SUCCESSLOG);
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        SparkLogReader reader = new SparkLogReader(new Configuration(), null);
-        SparkJobDAO r = reader.read(br);
-        logger.info(r.calCPUHour());
+        Reader reader = new Reader(new Configuration());
+        reader.setParser(new SparkLogParserImpl());
+        SparkJobModel r = reader.read(br);
+        logger.info(r.getAppStart().getId());
+        logger.info(r.getExecutorAdd().size());
     }
+
 
     @AfterClass
     public static void tearDownAfterClass() throws Exception {

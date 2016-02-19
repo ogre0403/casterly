@@ -2,17 +2,19 @@ package org.nchc.bigdata.parser;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;
-import org.nchc.bigdata.db.JobDAO;
+import org.nchc.bigdata.model.JobModel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Properties;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by 1403035 on 2016/2/2.
  */
-public abstract class Reader {
+public class Reader {
 
     protected IParser parser = null;
     protected PathFilter filter = null;
@@ -35,24 +37,35 @@ public abstract class Reader {
         setPath(path);
     }
 
-    public void readAllFile() throws IOException {
-        FileStatus[] allFileState = fs.listStatus(this.logDir, filter);
-        for(FileStatus status: allFileState) {
-            FSDataInputStream fis = fs.open(status.getPath());
-            BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-            JobDAO job = read(br);
-            persist(job);
-        }
+    public void setFilter(PathFilter filter){
+        this.filter = filter;
+    }
+
+    public void setParser(IParser parser){
+        this.parser = parser;
     }
 
     public void setPath(Path path){
         this.logDir = path;
     }
 
-    protected abstract <T extends JobDAO> T read(BufferedReader br) throws IOException;
+    public List<JobModel> readAllFile() throws IOException, SQLException {
+        FileStatus[] allFileState = fs.listStatus(this.logDir, filter);
+        List<JobModel> models = new ArrayList<JobModel>();
+        for(FileStatus status: allFileState) {
+            FSDataInputStream fis = fs.open(status.getPath());
+            BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+            models.add(read(br));
+        }
+        return models;
+    }
 
-    public void persist(JobDAO  job){
-        job.writeJob();
+    public < T extends JobModel> T read(BufferedReader br) throws IOException {
+        String line;
+        while(null != (line=br.readLine())){
+            parser.parse(line);
+        }
+        return parser.result();
     }
 
 }
