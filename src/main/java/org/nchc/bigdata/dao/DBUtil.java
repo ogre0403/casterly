@@ -1,4 +1,4 @@
-package org.nchc.bigdata.db;
+package org.nchc.bigdata.dao;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

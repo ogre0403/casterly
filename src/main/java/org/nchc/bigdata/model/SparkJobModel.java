@@ -1,7 +1,6 @@
-package org.nchc.bigdata.db;
+package org.nchc.bigdata.model;
 
 import com.google.gson.annotations.SerializedName;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -9,9 +8,9 @@ import java.util.*;
 /**
  * Created by 1403035 on 2016/2/3.
  */
-public class SparkJobDAO extends JobDAO {
+public class SparkJobModel implements JobModel {
 
-    private static Logger logger = Logger.getLogger(SparkJobDAO.class);
+    private static Logger logger = Logger.getLogger(SparkJobModel.class);
 
 
     private AppStart appStart;
@@ -22,81 +21,51 @@ public class SparkJobDAO extends JobDAO {
     private List<StageCompleted> stageComplete;
     private List<ExecutorAdded> executorAdd;
     private List<BlockManager> blockManager;
-    private Map<Integer, SparkTaskDAO> taskList;
+    private List<TaskStart> taskStart;
+    private List<TaskEnd> taskEnd;
 
-//    private List<TaskStart> taskStart;
-//    private List<TaskEnd> taskEnd;
+//    private Map<Integer, SparkTaskDAO> taskList;
+//    private Map<Integer, Pair<TaskStart, TaskEnd>>
 
-    public SparkJobDAO(Configuration conf){
-        SparkJobDAO.conf = conf;
+
+
+    public SparkJobModel(){
         this.setExecutorAdd(new ArrayList<ExecutorAdded>());
         this.setJobStart(new ArrayList<JobStart>());
         this.setJobEnd(new ArrayList<JobEnd>());
         this.setStageSubmit(new ArrayList<StageSubmit>());
         this.setStageComplete(new ArrayList<StageCompleted>());
         this.setBlockManager(new ArrayList<BlockManager>());
-        this.setTaskList(new HashMap<Integer, SparkTaskDAO>());
-//        this.setTaskStart(new ArrayList<TaskStart>());
-//        this.setTaskEnd(new ArrayList<TaskEnd>());
+        this.setTaskStart(new ArrayList<TaskStart>());
+        this.setTaskEnd(new ArrayList<TaskEnd>());
     }
 
-    public void setTaskList(Map<Integer, SparkTaskDAO> taskList){
-        this.taskList = taskList;
-    }
 
-    public Map<Integer, SparkTaskDAO> getTaskList(){
-        return taskList;
+    public void addTaskStart(TaskStart taskStart) {
+        this.taskStart.add(taskStart);
     }
 
     public void addTaskEnd(TaskEnd taskEnd) {
-        int taskid = taskEnd.getInfo().getId();
-        if (taskList.get(taskid) == null)
-            taskList.put(taskid, new SparkTaskDAO(conf));
-        taskList.get(taskid).setTaskEnd(taskEnd);
+        this.taskEnd.add(taskEnd);
     }
 
-    public void addTaskStart(TaskStart taskStart) {
-        int taskid = taskStart.getInfo().getId();
-        if (taskList.get(taskid) == null)
-            taskList.put(taskid, new SparkTaskDAO(conf));
-        taskList.get(taskid).setTaskStart(taskStart);
+
+    public List<TaskStart> getTaskStart() {
+        return taskStart;
     }
 
-//    public TaskStart getTaskStart(int task_id){
-//
-//    }
-
-    public long calCPUHour(){
-        if (CpuHour != -1)
-            return CpuHour;
-
-        for (SparkTaskDAO task: taskList.values()){
-            TaskEnd end = task.getTaskEnd();
-            long task_starttime = task.getTaskStart().getInfo().getLanuchTime();
-            long task_endtime = end == null ? this.appEnd.getTimestamp(): end.getInfo().getFinishTime();
-            this.CpuHour = this.CpuHour + (task_endtime - task_starttime);
-        }
-
-        logger.debug("CPUHOUR for " + this.appStart.getName() + " : " + CpuHour);
-        return CpuHour;
+    public void setTaskStart(List<TaskStart> taskStart) {
+        this.taskStart = taskStart;
     }
 
-//    public List<TaskStart> getTaskStart() {
-//        return taskStart;
-//    }
 
-//    public void setTaskStart(List<TaskStart> taskStart) {
-//        this.taskStart = taskStart;
-//    }
+    public List<TaskEnd> getTaskEnd() {
+        return taskEnd;
+    }
 
-
-//    public List<TaskEnd> getTaskEnd() {
-//        return taskEnd;
-//    }
-
-//    public void setTaskEnd(List<TaskEnd> taskEnd) {
-//        this.taskEnd = taskEnd;
-//    }
+    public void setTaskEnd(List<TaskEnd> taskEnd) {
+        this.taskEnd = taskEnd;
+    }
 
 
     public List<ExecutorAdded> getExecutorAdd() {
