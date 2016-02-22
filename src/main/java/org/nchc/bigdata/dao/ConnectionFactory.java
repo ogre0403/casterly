@@ -2,6 +2,7 @@ package org.nchc.bigdata.dao;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
+import org.nchc.bigdata.casterly.Const;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,9 +15,6 @@ public class ConnectionFactory {
     //static reference to itself
     private static Logger logger = Logger.getLogger(ConnectionFactory.class);
     private static ConnectionFactory instance = new ConnectionFactory();
-//    public static final String URL = "jdbc:mysql://localhost/jdbcdb";
-//    public static final String USER = "YOUR_DATABASE_USERNAME";
-//    public static final String PASSWORD = "YOUR_DATABASE_PASSWORD";
     public static final String DRIVER_CLASS = "com.mysql.jdbc.Driver";
 
     //private constructor
@@ -39,9 +37,9 @@ public class ConnectionFactory {
     }
 
     public static Connection getConnection(Configuration conf) {
-        String url = conf.get("SQL_URL");
-        String user = conf.get("SQL_USER");
-        String password = conf.get("SQL_PASSWORD");
+        String url = conf.get(Const.SQL_URL);
+        String user = conf.get(Const.SQL_USER);
+        String password = conf.get(Const.SQL_PASSWORD);
         return instance.createConnection(url, user,password);
     }
 }

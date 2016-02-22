@@ -1,4 +1,4 @@
-package org.nchc.bigdata.monitor;
+package org.nchc.bigdata.casterly;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -21,31 +21,36 @@ import org.apache.log4j.Logger;
 /**
  * Created by 1403035 on 2016/2/2.
  */
-public class SparkLogMonitor extends Thread{
+public class LogMonitor extends Thread{
 
     private static int INTERVAL = 10000;
 
-    private static Logger logger = Logger.getLogger(SparkLogMonitor.class);
+    private static Logger logger = Logger.getLogger(LogMonitor.class);
     private boolean isRunning = true;
-    private Reader sparkReader = null;
-    private JobDAO sparkJobDAO = null;
+    private Reader reader = null;
+    private JobDAO daoImpl = null;
 
-    public SparkLogMonitor(Configuration conf) throws IOException, SQLException {
+    public LogMonitor(Configuration conf, Reader reader) throws IOException, SQLException {
         /**
          * TODO: add DB info and path info
          **/
+        /*
         Path logPath = new Path(conf.get(""));
-        sparkReader = new Reader(conf, logPath);
-        sparkReader.setFilter(new SparkFileFilter(conf));
-        sparkReader.setParser(new SparkLogParserImpl());
-        this.sparkJobDAO = JoBDAOFactory.getSparkJobDAO(conf);
+        reader = new Reader(conf, logPath);
+        reader.setFilter(new SparkFileFilter(conf));
+        reader.setParser(new SparkLogParserImpl());
+        */
+        this.reader = reader;
+        this.daoImpl = JoBDAOFactory.getJobDAO(conf.get(Const.DAO_CLAZZ, Const.DAO_CLAZZ_SPARK), conf);
+//        this.sparkJobDAO = JoBDAOFactory.getSparkJobDAO(conf);
     }
 
     public void run(){
         while (isRunning) {
             try {
-                List<JobModel> jobs = sparkReader.readAllFile();
-                sparkJobDAO.add(jobs);
+                List<JobModel> jobs = reader.readAllFile();
+
+                daoImpl.add(jobs);
                 Thread.sleep(INTERVAL);
             } catch (Exception e) {
                 StringWriter errors = new StringWriter();
