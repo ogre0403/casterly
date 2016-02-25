@@ -27,12 +27,16 @@ public class Reader {
 
     public Reader(){}
 
-    public Reader(Configuration config) throws IOException {
+    public Reader(Configuration config) {
         this.config = config;
-        //this.fs = FileSystem.get(config);
+        try {
+            this.fs = FileSystem.get(config);
+        }catch (IOException e){
+
+        }
     }
 
-    public Reader(Configuration config, Path path) throws IOException {
+    public Reader(Configuration config, Path path) {
         this(config);
         setPath(path);
     }
@@ -49,7 +53,7 @@ public class Reader {
         this.logDir = path;
     }
 
-    public List<JobModel> readAllFile() throws IOException, SQLException {
+    public List<JobModel> readAllFile() throws IOException {
         FileStatus[] allFileState = fs.listStatus(this.logDir, filter);
         List<JobModel> models = new ArrayList<JobModel>();
         for(FileStatus status: allFileState) {

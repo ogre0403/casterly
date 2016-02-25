@@ -30,26 +30,15 @@ public class LogMonitor extends Thread{
     private Reader reader = null;
     private JobDAO daoImpl = null;
 
-    public LogMonitor(Configuration conf, Reader reader) throws IOException, SQLException {
-        /**
-         * TODO: add DB info and path info
-         **/
-        /*
-        Path logPath = new Path(conf.get(""));
-        reader = new Reader(conf, logPath);
-        reader.setFilter(new SparkFileFilter(conf));
-        reader.setParser(new SparkLogParserImpl());
-        */
+    public LogMonitor(Reader reader, JobDAO impl)  {
         this.reader = reader;
-        this.daoImpl = JoBDAOFactory.getJobDAO(conf.get(Const.DAO_CLAZZ, Const.DAO_CLAZZ_SPARK), conf);
-//        this.sparkJobDAO = JoBDAOFactory.getSparkJobDAO(conf);
+        this.daoImpl = impl;
     }
 
     public void run(){
         while (isRunning) {
             try {
                 List<JobModel> jobs = reader.readAllFile();
-
                 daoImpl.add(jobs);
                 Thread.sleep(INTERVAL);
             } catch (Exception e) {

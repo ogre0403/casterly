@@ -27,7 +27,7 @@ public class SparkFileFilter implements PathFilter {
 
     private int logType = 1;
 
-    public SparkFileFilter(Configuration config) throws SQLException {
+    public SparkFileFilter(Configuration config) {
         this.config = config;
     }
 

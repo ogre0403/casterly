@@ -63,25 +63,24 @@ public class DBTest {
             throws SQLException {
         PreparedStatement app_sum = connection.prepareStatement(
                 "CREATE TABLE APP_SUMMARY (" +
-                "EPOCH BIGINT, SEQ SMALLINT, TYPE CHAR(10), " +
+                "EPOCH BIGINT, SEQ SMALLINT, " +
                 "USER CHAR(16), JOBNAME CHAR(255), QUEUE CHAR(32), " +
                 "START BIGINT , FINISH BIGINT, CPUHOUR BIGINT)");
         app_sum.execute();
         app_sum.close();
 
-        PreparedStatement task_sum = connection.prepareStatement(
-                "CREATE TABLE TASK_SUMMARY (" +
-                "EPOCH BIGINT, SEQ SMALLINT, TYPE CHAR(10), "+
-                "MAP INT, REDUCE INT, "+
-                "EXECUTOR INT, TASK INT) ");
-        task_sum.execute();
-        task_sum.close();
-
         PreparedStatement task_detail = connection.prepareStatement(
-                "CREATE TABLE EXECUTOR_DETAIL (" +
-                "EPOCH BIGINT, SEQ SMALLINT, ID SMALLINT, START BIGINT)");
+                "CREATE TABLE TASK_DETAIL (" +
+                        "EPOCH BIGINT, SEQ SMALLINT,  TYPE CHAR(1), " +
+                        "ID INT, START BIGINT, FINISH BIGINT) ");
         task_detail.execute();
         task_detail.close();
+
+        PreparedStatement executor_detail = connection.prepareStatement(
+                "CREATE TABLE EXECUTOR_DETAIL (" +
+                "EPOCH BIGINT, SEQ SMALLINT, ID SMALLINT, START BIGINT)");
+        executor_detail.execute();
+        executor_detail.close();
     }
 
     @Test
@@ -102,11 +101,10 @@ public class DBTest {
 //        SparkJobDAOImpl impl = JoBDAOFactory.getSparkJobDAO(pass_into);
         JobDAO impl = JoBDAOFactory.getJobDAO(Const.DAO_CLAZZ_SPARK, pass_into);
         impl.add(r);
-        long a = impl.getUsage(1452487986830L, 2);
-        System.out.println(a);
 
         ResponseJobModel rmode = impl.findById(1452487986830L, 2);
         System.out.println(rmode.getCpuHour());
+        System.out.println(rmode.getExecutor_num());
     }
 
 

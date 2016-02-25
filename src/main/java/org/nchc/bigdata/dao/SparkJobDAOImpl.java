@@ -43,9 +43,9 @@ public class SparkJobDAOImpl extends JobDAO{
 
     @Override
     public boolean add(List<JobModel> models) throws SQLException {
-
         ResultSet rs = null;
-
+        connection = ConnectionFactory.getConnection(conf);
+        statement = connection.createStatement();
         String query;
         try {
             for (JobModel model : models) {
@@ -53,6 +53,8 @@ public class SparkJobDAOImpl extends JobDAO{
                     logger.warn("Not SparkJobModel. Can not add by " + this.getClass().getSimpleName() + " class");
                     return false;
                 }
+
+                // add basic Application info
                 long epoch = getEpoch(((SparkJobModel) model).getAppStart().getId());
                 long seq = getSeq(((SparkJobModel) model).getAppStart().getId());
                 long cpuhour = calCPUHour(model);
@@ -61,10 +63,18 @@ public class SparkJobDAOImpl extends JobDAO{
                 long start = ((SparkJobModel) model).getAppStart().getTimestamp();
                 long finish = ((SparkJobModel) model).getAppEnd().getTimestamp();
                 query = String.format(Const.SQL_TEMPLATE_ADD_JOB,
-                        epoch,seq,"SPARK",user,jobName,"spark",start,finish,cpuhour);
-                connection = ConnectionFactory.getConnection(conf);
-                statement = connection.createStatement();
+                        epoch, seq, user, jobName, "spark", start, finish, cpuhour);
                 rs = statement.executeQuery(query);
+
+                // add executor info
+                List<SparkJobModel.ExecutorAdded> executorList = ((SparkJobModel) model).getExecutorAdd();
+                for(SparkJobModel.ExecutorAdded executor : executorList){
+                    long executor_start = Long.parseLong(executor.getTime());
+                    int executor_id = Integer.parseInt(executor.getId());
+                    query = String.format(Const.SQL_TEMPLATE_ADD_EXECUTOR, epoch,seq,executor_id,executor_start);
+                    rs = statement.executeQuery(query);
+                }
+
             }
         }finally{
             DBUtil.close(rs);
@@ -88,7 +98,6 @@ public class SparkJobDAOImpl extends JobDAO{
 
         try{
             // create ResponseJobModel from query result
-
             if(rs.next()) {
                 resultModel.setCpuHour(rs.getLong("CPUHOUR"));
                 resultModel.setUser(rs.getString("USER"));
@@ -96,8 +105,12 @@ public class SparkJobDAOImpl extends JobDAO{
                 resultModel.setJobName(rs.getString("JOBNAME"));
                 resultModel.setSubmit_time(rs.getLong("START"));
                 resultModel.setFinish_time(rs.getLong("FINISH"));
-                //executor_num;
-                //task_num;
+                resultModel.setTask_num(0L);
+            }
+            // count the number of executor
+            rs = statement.executeQuery(String.format(Const.SQL_TEMPLATE_EXECOUNT_COUNT, epoch,seq));
+            if(rs.next()){
+                resultModel.setExecutor_num(rs.getInt("executor_count"));
             }
 
         }finally {
