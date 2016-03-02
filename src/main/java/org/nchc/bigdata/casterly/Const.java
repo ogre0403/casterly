@@ -32,6 +32,12 @@ public class Const {
     // Find out the Accounting data of a MR/Spark Application
     public static final String SQL_TEMPLATE_JOB_SUM = "SELECT * FROM APP_SUMMARY WHERE EPOCH = %d AND SEQ = %d";
 
+    public static final String SQL_TEMPLATE_UPDATE_LASTPROCESSED =
+            "UPDATE LAST_PROCESSED SET LAST = %d WHERE ID = 1" ;
+
+    // Find out the last processed file timestamp
+    public static final String SQL_TEMPLATE_GET_LASTPROCESSED =
+            "SELECT LAST FROM LAST_PROCESSED WHERE ID = 1";
 
     public static final String DAO_CLAZZ_SPARK = "org.nchc.bigdata.dao.SparkJobDAOImpl";
     public static final String DAO_CLAZZ_MAPREDUCE = "org.nchc.bigdata.dao.MRJobDAOImpl";

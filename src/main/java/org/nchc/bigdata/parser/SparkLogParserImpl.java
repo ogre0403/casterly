@@ -125,6 +125,8 @@ public class SparkLogParserImpl implements IParser {
     }
 
     public SparkJobModel result(){
-        return eventLogs;
+        return (SparkJobModel) eventLogs.deepClone();
+        //TODO: return clone entire eventLogs object
+//        return eventLogs;
     }
 }

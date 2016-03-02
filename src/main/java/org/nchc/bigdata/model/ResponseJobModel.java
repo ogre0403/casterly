@@ -3,7 +3,7 @@ package org.nchc.bigdata.model;
 /**
  * Created by 1403035 on 2016/2/19.
  */
-public class ResponseJobModel implements JobModel{
+public class ResponseJobModel extends JobModel{
 
     private String user;
     private String queue;

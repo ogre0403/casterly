@@ -3,12 +3,13 @@ package org.nchc.bigdata.model;
 import com.google.gson.annotations.SerializedName;
 import org.apache.log4j.Logger;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Created by 1403035 on 2016/2/3.
  */
-public class SparkJobModel implements JobModel {
+public class SparkJobModel extends JobModel {
 
     private static Logger logger = Logger.getLogger(SparkJobModel.class);
 
@@ -158,7 +159,7 @@ public class SparkJobModel implements JobModel {
 
 
 
-    public class JobStart{
+    public class JobStart implements Serializable{
 
         @SerializedName("Job ID")private int jobId;
         @SerializedName("Submission Time")private long submitTime;
@@ -183,7 +184,7 @@ public class SparkJobModel implements JobModel {
         }
     }
 
-    public class StageSubmit{
+    public class StageSubmit implements Serializable{
         @SerializedName("Stage Info")private StageInfos stageInfo;
 
         public StageInfos getStageInfo() {
@@ -196,7 +197,7 @@ public class SparkJobModel implements JobModel {
     }
 
     //{"Event":"SparkListenerApplicationStart","App Name":"HBase_Query_with_RDD","App ID":"application_1444612850687_0240","Timestamp":1446000188003,"User":"user1"}
-    public class AppStart{
+    public class AppStart implements Serializable{
         @SerializedName("App Name")private String name;
         @SerializedName("App ID")private String id;
         @SerializedName("Timestamp")private long timestamp;
@@ -228,8 +229,8 @@ public class SparkJobModel implements JobModel {
     }
 
     //{"Event":"SparkListenerExecutorAdded","Timestamp":1440399206528,"Executor ID":"1","Executor Info":{"Host":"server-a5","Total Cores":1,"Log Urls":{"stdout":"http://server-a5:8042/node/containerlogs/container_1439169262151_0181_01_000002/user1/stdout?start=0","stderr":"http://server-a5:8042/node/containerlogs/container_1439169262151_0181_01_000002/user1/stderr?start=0"}}}
-    public class ExecutorAdded{
-        public class ExecutorInfo{
+    public class ExecutorAdded implements Serializable{
+        public class ExecutorInfo implements Serializable{
             @SerializedName("Host")private String host;
             @SerializedName("Total Cores")private String cores;
             public String getHost() {
@@ -270,8 +271,8 @@ public class SparkJobModel implements JobModel {
     }
 
     //{"Event":"SparkListenerTaskStart","Stage ID":0,"Stage Attempt ID":0,"Task Info":{"Task ID":0,"Index":2,"Attempt":0,"Launch Time":1440399209585,"Executor ID":"1","Host":"server-a5","Locality":"NODE_LOCAL","Speculative":false,"Getting Result Time":0,"Finish Time":0,"Failed":false,"Accumulables":[]}}
-    public class TaskStart{
-        public class TaskInfo{
+    public class TaskStart implements Serializable{
+        public class TaskInfo implements Serializable{
             @SerializedName("Task ID")private int id;
             @SerializedName("Index")private int index;
             @SerializedName("Attempt")private int attempt;
@@ -364,8 +365,8 @@ public class SparkJobModel implements JobModel {
     //"Task Info":{"Task ID":0,"Index":2,"Attempt":0,"Launch Time":1440399209585,"Executor ID":"1","Host":"server-a5","Locality":"NODE_LOCAL","Speculative":false,"Getting Result Time":0,"Finish Time":1440399212318,"Failed":false,"Accumulables":[]},
     //"Task Metrics":{"Host Name":"server-a5","Executor Deserialize Time":644,"Executor Run Time":2011,"Result Size":1830,"JVM GC Time":69,"Result Serialization Time":1,"Memory Bytes Spilled":0,"Disk Bytes Spilled":0,
     //"Input Metrics":{"Data Read Method":"Hadoop","Bytes Read":134217728,"Records Read":834225}}}
-    public class TaskEnd{
-        public class Reason{
+    public class TaskEnd implements Serializable{
+        public class Reason implements Serializable{
             @SerializedName("Reason")private String reason;
             public String getReason() {
                 return reason;
@@ -374,7 +375,7 @@ public class SparkJobModel implements JobModel {
                 this.reason = reason;
             }
         }
-        public class TaskInfo{
+        public class TaskInfo implements Serializable{
             @SerializedName("Task ID")private int id;
             @SerializedName("Index")private int index;
             @SerializedName("Attempt")private int attempt;
@@ -453,8 +454,8 @@ public class SparkJobModel implements JobModel {
                 this.finishTime = finishTime;
             }
         }
-        public class TaskMetrics{
-            public class InputMetrics{
+        public class TaskMetrics implements Serializable{
+            public class InputMetrics implements Serializable{
                 @SerializedName("Data Read Method")private String readMethod;
                 @SerializedName("Bytes Read")private long readByte;
                 @SerializedName("Records Read")private long recordRead;
@@ -477,7 +478,7 @@ public class SparkJobModel implements JobModel {
                     this.recordRead = recordRead;
                 }
             }
-            public class OutputMetrics{
+            public class OutputMetrics implements Serializable{
                 @SerializedName("Data Write Method")private String writeMethod;
                 @SerializedName("Bytes Written")private long writeByte;
                 @SerializedName("Records Written")private long recordWrite;
@@ -611,7 +612,7 @@ public class SparkJobModel implements JobModel {
 //	"Number of Partitions":600,"Number of Cached Partitions":0,"Memory Size":0,"ExternalBlockStore Size":0,"Disk Size":0}],
 //	"Parent IDs":[],"Details":"org.apache.spark.rdd.RDD.count(RDD.scala:1095)\ncom.hbase.HBaseQueryWithRDD$.main(HBaseQueryWithRDD.scala:39)\ncom.hbase.HBaseQueryWithRDD.main(HBaseQueryWithRDD.scala)\nsun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\nsun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)\nsun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\njava.lang.reflect.Method.invoke(Method.java:606)\norg.apache.spark.deploy.SparkSubmit$.org$apache$spark$deploy$SparkSubmit$$runMain(SparkSubmit.scala:664)\norg.apache.spark.deploy.SparkSubmit$.doRunMain$1(SparkSubmit.scala:169)\norg.apache.spark.deploy.SparkSubmit$.submit(SparkSubmit.scala:192)\norg.apache.spark.deploy.SparkSubmit$.main(SparkSubmit.scala:111)\norg.apache.spark.deploy.SparkSubmit.main(SparkSubmit.scala)",
 //	"Submission Time":1446000221538,"Completion Time":1446000363639,"Accumulables":[]}}
-    public class StageCompleted{
+    public class StageCompleted implements Serializable{
         @SerializedName("Stage Info")private StageInfos stageInfo;
 
         public StageInfos getStageInfo() {
@@ -623,7 +624,7 @@ public class SparkJobModel implements JobModel {
         }
     }
 
-    public class StageInfos{
+    public class StageInfos implements Serializable{
         @SerializedName("Stage ID")private int id;
         @SerializedName("Stage Name")private String name;
         @SerializedName("Number of Tasks")private int taskNum;
@@ -676,7 +677,7 @@ public class SparkJobModel implements JobModel {
     }
 
     //{"Event":"SparkListenerApplicationEnd","Timestamp":1446000363655}
-    public class AppEnd{
+    public class AppEnd implements Serializable{
         @SerializedName("Timestamp")private long timestamp;
 
         public long getTimestamp() {
@@ -690,8 +691,8 @@ public class SparkJobModel implements JobModel {
     }
 
     //{"Event":"SparkListenerJobEnd","Job ID":0,"Completion Time":1446000363648,"Job Result":{"Result":"JobSucceeded"}}
-    public class JobEnd{
-        public class JobResult{
+    public class JobEnd implements Serializable{
+        public class JobResult implements Serializable{
             @SerializedName("Result")private String result;
             public String getResult() {
                 return result;
@@ -725,8 +726,8 @@ public class SparkJobModel implements JobModel {
         }
     }
 
-    public class BlockManager{
-        public class BlockManagerID{
+    public class BlockManager implements Serializable{
+        public class BlockManagerID implements Serializable{
             @SerializedName("Executor ID")private String id;
             @SerializedName("Host")private String host;
             @SerializedName("Port")private int port;
