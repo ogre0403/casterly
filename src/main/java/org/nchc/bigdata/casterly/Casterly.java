@@ -18,9 +18,13 @@ public class Casterly {
     public static void main( String[] args ) throws IOException, SQLException {
 
         Configuration conf = new Configuration();
+        LogMonitor sparkMtr = createSparkMonitor(conf, "");
+        sparkMtr.run();
+    }
 
+    public static LogMonitor createSparkMonitor(Configuration conf, String path) throws IOException, SQLException {
         // Setup Spark log file reader
-        Path logPath = new Path(" path / to /spark / log");
+        Path logPath = new Path(path);
 
         LogFileFilter sparkFileFilter = null;
         try {
@@ -35,11 +39,11 @@ public class Casterly {
         Reader sparkReader = new Reader(conf, logPath);
         sparkReader.setFilter(sparkFileFilter);
         sparkReader.setParser(new SparkLogParserImpl());
-
         LogMonitor sparkMtr = new LogMonitor(
                 sparkReader,      // Spark Log reader
                 JoBDAOFactory.getJobDAO(Const.DAO_CLAZZ_SPARK, conf)    // SparkDAO
         );
-        sparkMtr.run();
+
+        return sparkMtr;
     }
 }

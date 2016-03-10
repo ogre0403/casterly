@@ -4,6 +4,7 @@ package org.nchc.bigdata.dao;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
 import org.nchc.bigdata.casterly.Const;
+import org.nchc.bigdata.casterly.Util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -31,15 +32,15 @@ public class JoBDAOFactory {
                     .getDeclaredConstructor(Configuration.class).newInstance(conf);
 
         } catch (InstantiationException e) {
-            e.printStackTrace();
+            logger.error(Util.traceString(e));
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            logger.error(Util.traceString(e));
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
+            logger.error(Util.traceString(e));
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            logger.error(Util.traceString(e));
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            logger.error(Util.traceString(e));
         }
 
         daos.put(clazz,result);
@@ -55,15 +56,15 @@ public class JoBDAOFactory {
             dao = ( SparkJobDAOImpl )Class.forName(Const.DAO_CLAZZ_SPARK)
                     .getDeclaredConstructor(Configuration.class).newInstance(conf);
         } catch (InstantiationException e) {
-            e.printStackTrace();
+            logger.error(Util.traceString(e));
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            logger.error(Util.traceString(e));
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
+            logger.error(Util.traceString(e));
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            logger.error(Util.traceString(e));
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            logger.error(Util.traceString(e));
         }
         return dao;
     }

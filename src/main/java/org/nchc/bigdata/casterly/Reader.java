@@ -93,6 +93,7 @@ public class Reader {
 
     public < T extends JobModel> T read(BufferedReader br) throws IOException {
         String line;
+        parser.clear();
         while(null != (line=br.readLine())){
             parser.parse(line);
         }

@@ -13,7 +13,6 @@ public class SparkJobModel extends JobModel {
 
     private static Logger logger = Logger.getLogger(SparkJobModel.class);
 
-
     private AppStart appStart;
     private AppEnd appEnd;
     private List<JobStart> jobStart;
@@ -25,11 +24,6 @@ public class SparkJobModel extends JobModel {
     private List<TaskStart> taskStart;
     private List<TaskEnd> taskEnd;
 
-//    private Map<Integer, SparkTaskDAO> taskList;
-//    private Map<Integer, Pair<TaskStart, TaskEnd>>
-
-
-
     public SparkJobModel(){
         this.setExecutorAdd(new ArrayList<ExecutorAdded>());
         this.setJobStart(new ArrayList<JobStart>());
@@ -40,7 +34,6 @@ public class SparkJobModel extends JobModel {
         this.setTaskStart(new ArrayList<TaskStart>());
         this.setTaskEnd(new ArrayList<TaskEnd>());
     }
-
 
     public void addTaskStart(TaskStart taskStart) {
         this.taskStart.add(taskStart);
@@ -67,7 +60,6 @@ public class SparkJobModel extends JobModel {
     public void setTaskEnd(List<TaskEnd> taskEnd) {
         this.taskEnd = taskEnd;
     }
-
 
     public List<ExecutorAdded> getExecutorAdd() {
         return executorAdd;
@@ -157,7 +149,19 @@ public class SparkJobModel extends JobModel {
         return this.blockManager;
     }
 
-
+    @Override
+    public void clean() {
+        appStart = null;
+        appEnd = null;
+        jobStart.clear();
+        jobEnd.clear();
+        stageSubmit.clear();
+        stageComplete.clear();
+        executorAdd.clear();
+        blockManager.clear();
+        taskStart.clear();
+        taskEnd.clear();
+    }
 
     public class JobStart implements Serializable{
 

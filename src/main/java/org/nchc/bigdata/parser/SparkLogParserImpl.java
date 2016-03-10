@@ -5,8 +5,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.apache.log4j.Logger;
+import org.nchc.bigdata.casterly.Util;
 import org.nchc.bigdata.model.SparkJobModel;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -68,15 +70,13 @@ public class SparkLogParserImpl implements IParser {
         }
     }
 
-    public boolean parse(String line){
+    public boolean parse(String line) throws IOException{
         int i = -1;
         JsonElement element = null;
         try{
             element = parser.parse(line);
         } catch(Exception e){
-            StringWriter errors = new StringWriter();
-            e.printStackTrace(new PrintWriter(errors));
-            logger.error(errors.toString());
+            logger.error(Util.traceString(e));
             return false;
         }
 
@@ -124,9 +124,12 @@ public class SparkLogParserImpl implements IParser {
         return true;
     }
 
+    @Override
+    public void clear() {
+        eventLogs.clean();
+    }
+
     public SparkJobModel result(){
         return (SparkJobModel) eventLogs.deepClone();
-        //TODO: return clone entire eventLogs object
-//        return eventLogs;
     }
 }

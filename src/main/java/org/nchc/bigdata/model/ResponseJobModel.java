@@ -99,4 +99,9 @@ public class ResponseJobModel extends JobModel{
     public void setTask_num(long task_num) {
         this.task_num = task_num;
     }
+
+    @Override
+    public void clean() {
+        // do-nothing
+    }
 }

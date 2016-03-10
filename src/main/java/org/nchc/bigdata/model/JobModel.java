@@ -27,4 +27,6 @@ public abstract class JobModel implements Serializable {
         }
     }
 
+    public abstract void clean();
+
 }
