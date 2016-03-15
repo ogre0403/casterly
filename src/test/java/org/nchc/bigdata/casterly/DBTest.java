@@ -34,41 +34,9 @@ public class DBTest {
         databaseTester = new JdbcDatabaseTester(org.hsqldb.jdbcDriver.class.getName(),
                 "jdbc:hsqldb:mem:mymemdb", "SA", "");
 //                "jdbc:hsqldb:file:/opt/dao/testdb", "sa", "");
-        createTablesSinceDbUnitDoesNot(databaseTester.getConnection().getConnection());
+        testUtil.createTablesSinceDbUnitDoesNot(databaseTester.getConnection().getConnection());
 
 
-    }
-
-    private static void createTablesSinceDbUnitDoesNot(Connection connection)
-            throws SQLException {
-        PreparedStatement app_sum = connection.prepareStatement(
-                "CREATE TABLE APP_SUMMARY (" +
-                        "EPOCH BIGINT, SEQ SMALLINT, " +
-                        "USER CHAR(16), JOBNAME CHAR(255), QUEUE CHAR(32), " +
-                        "START BIGINT , FINISH BIGINT, CPUHOUR BIGINT)");
-        app_sum.execute();
-        app_sum.close();
-
-        PreparedStatement task_detail = connection.prepareStatement(
-                "CREATE TABLE TASK_DETAIL (" +
-                        "EPOCH BIGINT, SEQ SMALLINT,  TYPE CHAR(1), " +
-                        "ID INT, START BIGINT, FINISH BIGINT) ");
-        task_detail.execute();
-        task_detail.close();
-
-        PreparedStatement executor_detail = connection.prepareStatement(
-                "CREATE TABLE EXECUTOR_DETAIL (" +
-                "EPOCH BIGINT, SEQ SMALLINT, ID SMALLINT, START BIGINT)");
-        executor_detail.execute();
-        executor_detail.close();
-
-        PreparedStatement last_processed = connection.prepareStatement(
-                "CREATE  TABLE  LAST_PROCESSED (" +
-                        "ID INT, LAST BIGINT)");
-        last_processed.execute();
-        last_processed = connection.prepareStatement("INSERT INTO LAST_PROCESSED (ID, LAST) VALUES (1,100)");
-        last_processed.execute();
-        last_processed.close();
     }
 
     @Test

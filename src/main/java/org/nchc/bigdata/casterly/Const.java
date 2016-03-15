@@ -1,6 +1,5 @@
 package org.nchc.bigdata.casterly;
 
-import org.apache.avro.Schema;
 
 /**
  * Created by 1403035 on 2016/2/22.
@@ -29,17 +28,27 @@ public class Const {
             "SELECT COUNT(ID) AS executor_count FROM EXECUTOR_DETAIL WHERE EPOCH = %d AND SEQ = %d";
 
     // Find out the CpuHour of a MR/Spark Application
-    public static final String SQL_TEMPLATE_USAGE = "SELECT CPUHOUR FROM APP_SUMMARY WHERE EPOCH = %d AND SEQ = %d";
+    public static final String SQL_TEMPLATE_USAGE =
+            "SELECT CPUHOUR FROM APP_SUMMARY WHERE EPOCH = %d AND SEQ = %d";
 
     // Find out the Accounting data of a MR/Spark Application
-    public static final String SQL_TEMPLATE_JOB_SUM = "SELECT * FROM APP_SUMMARY WHERE EPOCH = %d AND SEQ = %d";
+    public static final String SQL_TEMPLATE_JOB_SUM =
+            "SELECT * FROM APP_SUMMARY WHERE EPOCH = %d AND SEQ = %d";
 
+    // add last processed file timestamp into db
     public static final String SQL_TEMPLATE_UPDATE_LASTPROCESSED =
             "UPDATE LAST_PROCESSED SET LAST = %d WHERE ID = 1" ;
 
     // Find out the last processed file timestamp
     public static final String SQL_TEMPLATE_GET_LASTPROCESSED =
             "SELECT LAST FROM LAST_PROCESSED WHERE ID = 1";
+
+    // add map or reduce task into DB
+    public static final String SQL_TEMPLATE_ADD_TASK =
+            "INSERT INTO TASK_DETAIL" +
+            "(EPOCH , SEQ   , TYPE  , TASKID, ATTEMPTID , START , FINISH)"+
+            "VALUES" +
+            "(%d    , %d    , \'%s\'    , %d    , %d        , %d    , %d)" ;
 
     public static final String DAO_CLAZZ_SPARK = "org.nchc.bigdata.dao.SparkJobDAOImpl";
     public static final String DAO_CLAZZ_MAPREDUCE = "org.nchc.bigdata.dao.MRJobDAOImpl";

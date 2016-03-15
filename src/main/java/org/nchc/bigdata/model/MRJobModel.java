@@ -287,7 +287,7 @@ public class MRJobModel extends JobModel {
 
     public class JobUnsuccessfulCompletion implements Serializable{
         @SerializedName("jobid")private String jobid;
-        @SerializedName("finishTime")private String finishTime;
+        @SerializedName("finishTime")private long finishTime;
         @SerializedName("finishedMaps")private String finishedMaps;
         @SerializedName("finishedReduces")private String finishedReduces;
         @SerializedName("jobStatus")private String jobStatus;
@@ -301,11 +301,11 @@ public class MRJobModel extends JobModel {
             this.jobid = jobid;
         }
 
-        public String getFinishTime() {
+        public long getFinishTime() {
             return finishTime;
         }
 
-        public void setFinishTime(String finishTime) {
+        public void setFinishTime(long finishTime) {
             this.finishTime = finishTime;
         }
 
@@ -378,6 +378,45 @@ public class MRJobModel extends JobModel {
         @SerializedName("shufflePort")private int shufflePort;
         @SerializedName("containerId")private String containerId;
 
+        public long getStartTime() {
+            return startTime;
+        }
+
+        public void setStartTime(long startTime) {
+            this.startTime = startTime;
+        }
+
+        public String getTrackerName() {
+            return trackerName;
+        }
+
+        public void setTrackerName(String trackerName) {
+            this.trackerName = trackerName;
+        }
+
+        public int getHttpPort() {
+            return httpPort;
+        }
+
+        public void setHttpPort(int httpPort) {
+            this.httpPort = httpPort;
+        }
+
+        public int getShufflePort() {
+            return shufflePort;
+        }
+
+        public void setShufflePort(int shufflePort) {
+            this.shufflePort = shufflePort;
+        }
+
+        public String getContainerId() {
+            return containerId;
+        }
+
+        public void setContainerId(String containerId) {
+            this.containerId = containerId;
+        }
     }
 
     public abstract class TaskAttemptCompleted extends TaskAttempt{

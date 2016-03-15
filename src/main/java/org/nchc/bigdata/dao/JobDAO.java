@@ -24,7 +24,7 @@ public abstract class JobDAO {
     protected Statement statement;
     protected Configuration conf;
 
-    abstract long calCPUHour(JobModel model);
+    public abstract long calCPUHour(JobModel model);
     public abstract boolean add(List<JobModel> models) throws SQLException;
     public abstract List<ResponseJobModel> findByName( String name ) throws SQLException;
     public abstract ResponseJobModel findById( long epoch, int seq ) throws SQLException;
