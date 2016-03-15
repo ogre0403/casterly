@@ -186,12 +186,49 @@ public class MRJobDAOImpl extends JobDAO {
     }
 
     @Override
-    public List<ResponseJobModel> findByName(String name) throws SQLException {
+    public List<ResponseJobModel> findByTime(long start, long end) throws SQLException {
         return null;
     }
 
     @Override
     public ResponseJobModel findById(long epoch, int seq) throws SQLException {
-        return null;
+        ResultSet rs = accessDbById(epoch, seq);
+        ResponseJobModel resultModel = new ResponseJobModel();
+
+        try{
+            // create ResponseJobModel from query result
+            if(rs.next()) {
+                resultModel.setCpuHour(rs.getLong("CPUHOUR"));
+                resultModel.setUser(rs.getString("USER"));
+                resultModel.setQueue(rs.getString("QUEUE"));
+                resultModel.setJobName(rs.getString("JOBNAME"));
+                resultModel.setSubmit_time(rs.getLong("START"));
+                resultModel.setFinish_time(rs.getLong("FINISH"));
+            }
+            // count the number of map and reduce task attempt
+            resultModel.setMap_num(findTaskNum(epoch,seq,"M"));
+            resultModel.setReduce_num(findTaskNum(epoch,seq,"R"));
+
+        }finally {
+            DBUtil.close(rs);
+            DBUtil.close(statement);
+            DBUtil.close(connection);
+        }
+        return resultModel;
+    }
+
+    private long findTaskNum(long epoch, int seq, String type) {
+        ResultSet rs = null;
+
+        try {
+            rs = statement.executeQuery(
+                    String.format(Const.SQL_TEMPLATE_TASK_COUNT, epoch, seq, type));
+            return (rs.next()) ? rs.getLong("task_count") : 0L;
+        }catch (SQLException e){
+            logger.warn(Util.traceString(e));
+            return 0L;
+        }finally {
+            DBUtil.close(rs);
+        }
     }
 }

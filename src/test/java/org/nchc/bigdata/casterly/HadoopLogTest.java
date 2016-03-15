@@ -7,6 +7,7 @@ import org.junit.*;
 import org.junit.runners.MethodSorters;
 import org.nchc.bigdata.dao.JobDAO;
 import org.nchc.bigdata.model.MRJobModel;
+import org.nchc.bigdata.model.ResponseJobModel;
 import org.nchc.bigdata.parser.MRLogParserImpl;
 
 import java.io.BufferedReader;
@@ -75,6 +76,15 @@ public class HadoopLogTest {
         queryDB_APPSUMMARY(databaseTester.getConnection().getConnection());
         queryDB_TASKDETAIL(databaseTester.getConnection().getConnection());
         queryDB_APP_JOIN_TASK(databaseTester.getConnection().getConnection());
+    }
+
+    @Test
+    public void test4() throws SQLException {
+        ResponseJobModel response = impl.findById(1456378629209L, 161);
+        logger.info(response.getCpuHour());
+        logger.info(response.getUser());
+        logger.info(response.getReduce_num());
+        logger.info(response.getMap_num());
     }
 
     private void queryDB_APPSUMMARY(Connection connection) throws SQLException {

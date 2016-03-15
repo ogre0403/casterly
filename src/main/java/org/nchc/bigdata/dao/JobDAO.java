@@ -26,7 +26,7 @@ public abstract class JobDAO {
 
     public abstract long calCPUHour(JobModel model);
     public abstract boolean add(List<JobModel> models) throws SQLException;
-    public abstract List<ResponseJobModel> findByName( String name ) throws SQLException;
+    public abstract List<ResponseJobModel> findByTime(long start, long end) throws SQLException;
     public abstract ResponseJobModel findById( long epoch, int seq ) throws SQLException;
 
     public boolean add(JobModel model ) throws SQLException{

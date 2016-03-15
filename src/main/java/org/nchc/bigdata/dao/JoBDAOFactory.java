@@ -15,10 +15,7 @@ import java.util.HashMap;
 public class JoBDAOFactory {
 
     private static Logger logger = Logger.getLogger(JoBDAOFactory.class);
-
-    private static SparkJobDAOImpl dao = null;
     private static HashMap<String, JobDAO> daos = new HashMap<>();
-
 
     public static JobDAO getJobDAO(String clazz, Configuration conf){
 
@@ -31,42 +28,15 @@ public class JoBDAOFactory {
              result = (JobDAO) Class.forName(clazz)
                     .getDeclaredConstructor(Configuration.class).newInstance(conf);
 
-        } catch (InstantiationException e) {
-            logger.error(Util.traceString(e));
-        } catch (IllegalAccessException e) {
-            logger.error(Util.traceString(e));
-        } catch (InvocationTargetException e) {
-            logger.error(Util.traceString(e));
-        } catch (NoSuchMethodException e) {
-            logger.error(Util.traceString(e));
-        } catch (ClassNotFoundException e) {
+        } catch (InstantiationException |
+                 IllegalAccessException |
+                 NoSuchMethodException |
+                 InvocationTargetException |
+                 ClassNotFoundException e) {
             logger.error(Util.traceString(e));
         }
 
         daos.put(clazz,result);
         return result;
     }
-
-    public static SparkJobDAOImpl getSparkJobDAO(Configuration conf){
-        if ( dao != null ) {
-            return dao;
-        }
-
-        try {
-            dao = ( SparkJobDAOImpl )Class.forName(Const.DAO_CLAZZ_SPARK)
-                    .getDeclaredConstructor(Configuration.class).newInstance(conf);
-        } catch (InstantiationException e) {
-            logger.error(Util.traceString(e));
-        } catch (IllegalAccessException e) {
-            logger.error(Util.traceString(e));
-        } catch (InvocationTargetException e) {
-            logger.error(Util.traceString(e));
-        } catch (NoSuchMethodException e) {
-            logger.error(Util.traceString(e));
-        } catch (ClassNotFoundException e) {
-            logger.error(Util.traceString(e));
-        }
-        return dao;
-    }
-
 }

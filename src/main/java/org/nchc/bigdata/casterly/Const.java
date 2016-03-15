@@ -25,7 +25,13 @@ public class Const {
 
     // Find out the number of executor of a Spark Application
     public static final String SQL_TEMPLATE_EXECOUNT_COUNT =
-            "SELECT COUNT(ID) AS executor_count FROM EXECUTOR_DETAIL WHERE EPOCH = %d AND SEQ = %d";
+            "SELECT COUNT(ID) AS executor_count FROM EXECUTOR_DETAIL " +
+                    "WHERE EPOCH = %d AND SEQ = %d";
+
+    // Find out the number of map (reduce) of a MR Application
+    public static final String SQL_TEMPLATE_TASK_COUNT =
+            "SELECT COUNT(TYPE) AS task_count FROM TASK_DETAIL " +
+                    "WHERE EPOCH = %d AND SEQ = %d AND TYPE = '%s'";
 
     // Find out the CpuHour of a MR/Spark Application
     public static final String SQL_TEMPLATE_USAGE =

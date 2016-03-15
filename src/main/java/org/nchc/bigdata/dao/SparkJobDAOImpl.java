@@ -85,7 +85,7 @@ public class SparkJobDAOImpl extends JobDAO{
     }
 
     @Override
-    public List<ResponseJobModel> findByName(String name) throws SQLException {
+    public List<ResponseJobModel> findByTime(long start, long end) throws SQLException {
 
         return null;
     }
