@@ -217,6 +217,11 @@ public class MRJobDAOImpl extends JobDAO {
         return resultModel;
     }
 
+    @Override
+    public void close() {
+        //TODO
+    }
+
     private long findTaskNum(long epoch, int seq, String type) {
         ResultSet rs = null;
 

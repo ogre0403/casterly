@@ -42,7 +42,7 @@ public class Reader {
         try {
             this.fs = FileSystem.get(config);
         }catch (IOException e){
-
+            logger.error(Util.traceString(e));
         }
     }
 
@@ -121,4 +121,7 @@ public class Reader {
         return true;
     }
 
+    public void close(){
+
+    }
 }

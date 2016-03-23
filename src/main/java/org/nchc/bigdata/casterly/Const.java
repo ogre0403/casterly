@@ -59,7 +59,11 @@ public class Const {
     public static final String DAO_CLAZZ_SPARK = "org.nchc.bigdata.dao.SparkJobDAOImpl";
     public static final String DAO_CLAZZ_MAPREDUCE = "org.nchc.bigdata.dao.MRJobDAOImpl";
 
+    public static final String FILTER_CLAZZ_SPARK = "org.nchc.bigdata.filter.SparkLogFileFilter";
+    public static final String PARSER_CLAZZ_SPARK = "org.nchc.bigdata.parser.SparkLogParserImpl";
 
+    public static final String FILTER_CLAZZ_MAPREDUCE = "org.nchc.bigdata.filter.MRLogFileFilter";
+    public static final String PARSER_CLAZZ_MAPREDUCE = "org.nchc.bigdata.parser.MRLogParserImpl";
 
     public final static String JOB_SUBMITTED = "JOB_SUBMITTED";
     public final static String JOB_FINISHED = "JOB_FINISHED";
@@ -75,7 +79,4 @@ public class Const {
     public final static String REDUCE_ATTEMPT_FAILED = "REDUCE_ATTEMPT_FAILED";
     public final static String REDUCE_ATTEMPT_KILLED = "REDUCE_ATTEMPT_KILLED";
     public final static String AM_STARTED = "AM_STARTED";
-
-
-
 }

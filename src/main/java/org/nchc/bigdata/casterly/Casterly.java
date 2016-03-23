@@ -7,6 +7,7 @@ import org.nchc.bigdata.dao.JoBDAOFactory;
 import org.nchc.bigdata.filter.LogFileFilter;
 import org.nchc.bigdata.filter.SparkLogFileFilter;
 import org.nchc.bigdata.parser.SparkLogParserImpl;
+import sun.rmi.runtime.Log;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -14,36 +15,50 @@ import java.sql.SQLException;
 
 public class Casterly {
     private static Logger logger = Logger.getLogger(Casterly.class);
+    private static String[] FILTER_CLAZZ = {Const.FILTER_CLAZZ_SPARK, Const.FILTER_CLAZZ_MAPREDUCE};
+    private static String[] PARSER_CLAZZ = {Const.PARSER_CLAZZ_SPARK, Const.PARSER_CLAZZ_MAPREDUCE};
+    private static String[] DAO_CLAZZ = {Const.DAO_CLAZZ_SPARK, Const.DAO_CLAZZ_MAPREDUCE};
 
-    public static void main( String[] args ) throws IOException, SQLException {
+    public static void main( String[] args ) {
 
         Configuration conf = new Configuration();
-        LogMonitor sparkMtr = createSparkMonitor(conf, "");
-        sparkMtr.run();
+
+/*
+        LogMonitor sparkMtr = LogMonitor.createLogMonitor(
+            conf, "   ",
+            Const.FILTER_CLAZZ_SPARK,
+            Const.PARSER_CLAZZ_SPARK,
+            Const.DAO_CLAZZ_SPARK);
+        if(sparkMtr != null) {
+            sparkMtr.start();
+            addShutdownHook(sparkMtr);
+        }else
+            logger.warn("Spark Monitor initialize fail!");
+*/
+
+        LogMonitor MRMtr = LogMonitor.createLogMonitor(
+            conf, "/user/history/done/",
+            Const.FILTER_CLAZZ_MAPREDUCE,
+            Const.PARSER_CLAZZ_MAPREDUCE,
+            Const.DAO_CLAZZ_MAPREDUCE
+        );
+        if(MRMtr != null) {
+            MRMtr.start();
+            addShutdownHook(MRMtr);
+        }else
+            logger.warn("MapReduce Monitor initialize fail!");
+
+
     }
 
-    public static LogMonitor createSparkMonitor(Configuration conf, String path) throws IOException, SQLException {
-        // Setup Spark log file reader
-        Path logPath = new Path(path);
-
-        LogFileFilter sparkFileFilter = null;
-        try {
-            sparkFileFilter = new SparkLogFileFilter(conf);
-        } catch (IOException e) {
-            logger.error("Can not get HDFS");
-            throw  e;
-        } catch (SQLException e) {
-            logger.error("Can not get DB");
-            throw e;
-        }
-        Reader sparkReader = new Reader(conf, logPath);
-        sparkReader.setFilter(sparkFileFilter);
-        sparkReader.setParser(new SparkLogParserImpl());
-        LogMonitor sparkMtr = new LogMonitor(
-                sparkReader,      // Spark Log reader
-                JoBDAOFactory.getJobDAO(Const.DAO_CLAZZ_SPARK, conf)    // SparkDAO
+    private static void addShutdownHook(final LogMonitor thread){
+        Runtime.getRuntime().addShutdownHook(
+            new Thread(){
+                public void run(){
+                    thread.stopThread();
+                    thread.interrupt();
+                }
+            }
         );
-
-        return sparkMtr;
     }
 }

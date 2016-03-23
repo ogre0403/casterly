@@ -121,4 +121,9 @@ public class SparkJobDAOImpl extends JobDAO{
         return resultModel;
     }
 
+    @Override
+    public void close() {
+        //TODO
+    }
+
 }

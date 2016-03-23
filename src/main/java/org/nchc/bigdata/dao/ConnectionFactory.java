@@ -3,6 +3,7 @@ package org.nchc.bigdata.dao;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
 import org.nchc.bigdata.casterly.Const;
+import org.nchc.bigdata.casterly.Util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -22,7 +23,7 @@ public class ConnectionFactory {
         try {
             Class.forName(DRIVER_CLASS);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            logger.error(Util.traceString(e));
         }
     }
 
@@ -32,6 +33,7 @@ public class ConnectionFactory {
             connection = DriverManager.getConnection(url, user, password);
         } catch (SQLException e) {
             logger.error("Unable to Connect to Database. [" + url + " / " +user + " / " +password +"]");
+            logger.error(Util.traceString(e));
         }
         return connection;
     }
