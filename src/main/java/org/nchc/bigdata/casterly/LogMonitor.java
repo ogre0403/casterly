@@ -18,7 +18,7 @@ import org.nchc.bigdata.parser.IParser;
 public class LogMonitor extends Thread{
 
     //TODO: from configuration file
-    private static int INTERVAL = 10000;
+    private int INTERVAL = 10000;
 
     private static Logger logger = Logger.getLogger(LogMonitor.class);
     private boolean isRunning = true;
@@ -30,11 +30,15 @@ public class LogMonitor extends Thread{
         this.daoImpl = impl;
     }
 
+    public void setInterval(int interval){
+        this.INTERVAL = interval;
+    }
+
     public void run(){
         while (isRunning) {
             try {
                 List<JobModel> jobs = reader.readAllFile(true);
-                logger.info("Size =  " + jobs.size());
+                logger.debug("Size =  " + jobs.size());
                 daoImpl.add(jobs);
                 Thread.sleep(INTERVAL);
             }catch(InterruptedException e) {
@@ -57,7 +61,8 @@ public class LogMonitor extends Thread{
             Configuration conf, String path,
             String FilterClazz,
             String ParserClazz,
-            String DAOClazz){
+            String DAOClazz,
+            int interval){
         Path logPath = new Path(path);
 
         LogFileFilter fileFilter = null;
@@ -88,7 +93,7 @@ public class LogMonitor extends Thread{
                 reader,      // Log reader
                 JoBDAOFactory.getJobDAO(DAOClazz, conf)    // DAO
         );
-
+        monitor.setInterval(interval);
         return monitor;
     }
 }

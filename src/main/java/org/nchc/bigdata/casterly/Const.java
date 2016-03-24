@@ -8,6 +8,9 @@ public class Const {
     public static final String SQL_USER = "SQL_USER";
     public static final String SQL_PASSWORD = "SQL_PASSWORD";
     public static final String SQL_URL = "SQL_URL";
+    public static final String PROPFILENAME = "casterly.properties";
+    public static final String MONITOR_INTERVAL_SEC = "MONITOR_INTERVAL_SEC";
+
 
     public static final String SQL_TEMPLATE_ADD_JOB = "INSERT INTO " +
             "APP_SUMMARY " +
