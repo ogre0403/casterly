@@ -22,6 +22,9 @@ public class Casterly {
     public static void main( String[] args ) {
 
         Configuration conf = new Configuration();
+        conf.set(Const.SQL_URL, "jdbc:mysql://localhost/casterly");
+        conf.set(Const.SQL_USER, "root");
+        conf.set(Const.SQL_PASSWORD, "ogre0403");
 
 /*
         LogMonitor sparkMtr = LogMonitor.createLogMonitor(
@@ -47,8 +50,6 @@ public class Casterly {
             addShutdownHook(MRMtr);
         }else
             logger.warn("MapReduce Monitor initialize fail!");
-
-
     }
 
     private static void addShutdownHook(final LogMonitor thread){

@@ -8,10 +8,7 @@ import org.nchc.bigdata.model.JobModel;
 import org.nchc.bigdata.model.MRJobModel;
 import org.nchc.bigdata.model.ResponseJobModel;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 import java.util.Map;
 
@@ -121,27 +118,29 @@ public class MRJobDAOImpl extends JobDAO {
     private boolean addAppSummary(Connection connection,
                                   long epoch, long seq,
                                   String user, String jobName,
-                                  long start, long finish, long cpuhour){
-        ResultSet rs = null;
-        Statement statement;
-
+                                  long start, long finish, long cpuhour) throws SQLException {
+        PreparedStatement statement;
         try {
-            statement = connection.createStatement();
+            statement =connection.prepareStatement(Const.SQL_TEMPLATE_ADD_JOB);
         } catch (SQLException e) {
             logger.error(Util.traceString(e));
             return false;
         }
-
-        String query = String.format(Const.SQL_TEMPLATE_ADD_JOB,
-                epoch, seq, user, jobName, "mapreduce", start, finish, cpuhour);
+        statement.setLong(1, epoch);
+        statement.setLong(2, seq);
+        statement.setString(3, user);
+        statement.setString(4, jobName);
+        statement.setString(5, "mapreduce");
+        statement.setLong(6, start);
+        statement.setLong(7,finish);
+        statement.setLong(8,cpuhour);
         try {
-            rs = statement.executeQuery(query);
+            statement.executeUpdate();
         }catch (SQLException e) {
             logger.error(Util.traceString(e));
             return false;
         } finally {
             // close local variable, global variable connection SHOULD NOT BE CLOSED HERE.
-            DBUtil.close(rs);
             DBUtil.close(statement);
         }
         return true;
@@ -153,11 +152,10 @@ public class MRJobDAOImpl extends JobDAO {
                                   long epoch,
                                   long seq,
                                   String type) {
-        ResultSet rs = null;
-        Statement statement;
+        PreparedStatement statement;
 
         try {
-            statement = connection.createStatement();
+            statement = connection.prepareStatement(Const.SQL_TEMPLATE_ADD_TASK);
         } catch (SQLException e) {
             logger.error(Util.traceString(e));
             return false;
@@ -170,16 +168,20 @@ public class MRJobDAOImpl extends JobDAO {
                 long finishTime = completedMap.get(attemptID).getFinishTime();
                 long taskid = Long.parseLong(attemptID.split("_")[0]);
                 long attemptid = Long.parseLong(attemptID.split("_")[1]);
-                String query = String.format(Const.SQL_TEMPLATE_ADD_TASK,
-                        epoch, seq, type, taskid, attemptid, startTime, finishTime);
-                rs = statement.executeQuery(query);
+                statement.setLong(1, epoch);
+                statement.setLong(2,seq);
+                statement.setString(3,type);
+                statement.setLong(4,taskid);
+                statement.setLong(5,attemptid);
+                statement.setLong(6,startTime);
+                statement.setLong(7,finishTime);
+                statement.executeUpdate();
             }
         } catch (SQLException e) {
             logger.error(Util.traceString(e));
             return false;
         } finally {
             // close local variable, global variable connection SHOULD NOT BE CLOSED HERE.
-            DBUtil.close(rs);
             DBUtil.close(statement);
         }
         return true;

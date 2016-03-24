@@ -32,9 +32,12 @@ public abstract class LogFileFilter implements PathFilter {
     private long lastProcessedFileModifiedTime = 0;
     private long largestTimeStamp = 0;
 
-    public LogFileFilter(Configuration conf) throws IOException {
+    public LogFileFilter(Configuration conf) throws IOException, SQLException {
         this.config = conf;
         fs = FileSystem.get(conf);
+        long lastTime = getLastProcessedFileModifiedTimeFromDB();
+        this.lastProcessedFileModifiedTime = lastTime;
+        this.largestTimeStamp = lastTime;
     }
 
     public void setFileSystem(FileSystem fs){
@@ -58,9 +61,9 @@ public abstract class LogFileFilter implements PathFilter {
         return  lastProcessedFileModifiedTime;
     }
 
-    public void setLastProcessedFileModifiedTime(long lastTime){
-        this.lastProcessedFileModifiedTime = lastTime;
-    }
+//    public void setLastProcessedFileModifiedTime(long lastTime){
+//        this.lastProcessedFileModifiedTime = lastTime;
+//    }
 
     public long getLastProcessedFileModifiedTimeFromDB() throws SQLException {
         ResultSet rs = null ;

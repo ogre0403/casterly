@@ -72,7 +72,7 @@ public class DBTest {
 
         SparkLogFileFilter filter = new SparkLogFileFilter(pass_into);
         long r1 = filter.getLastProcessedFileModifiedTime();
-        Assert.assertEquals(100,r1);
+        Assert.assertEquals(0,r1);
         Reader reader = new Reader(pass_into);
         reader.setFilter(filter);
         reader.saveLastProcessedTime(999L);

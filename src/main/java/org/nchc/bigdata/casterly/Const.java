@@ -9,19 +9,18 @@ public class Const {
     public static final String SQL_PASSWORD = "SQL_PASSWORD";
     public static final String SQL_URL = "SQL_URL";
 
-    // Insert single Application Accounting data
     public static final String SQL_TEMPLATE_ADD_JOB = "INSERT INTO " +
             "APP_SUMMARY " +
             "(EPOCH, SEQ, USER, JOBNAME, QUEUE, START, FINISH, CPUHOUR) " +
             "VALUES " +
-            "(%d, %d,  \'%s\', \'%s\', \'%s\', %d, %d, %d)";
+            "(?,?,?,?,?,?,?,?)";
 
     // Insert Executor info of a Spark application
     public static final String SQL_TEMPLATE_ADD_EXECUTOR = "INSERT INTO "+
             "EXECUTOR_DETAIL" +
             "(EPOCH ,SEQ    ,ID , START)"+
             "VALUES " +
-            "(%d    ,%d     ,%d, %d    )";
+            "(?    ,?     ,?, ?    )";
 
     // Find out the number of executor of a Spark Application
     public static final String SQL_TEMPLATE_EXECOUNT_COUNT =
@@ -54,7 +53,7 @@ public class Const {
             "INSERT INTO TASK_DETAIL" +
             "(EPOCH , SEQ   , TYPE  , TASKID, ATTEMPTID , START , FINISH)"+
             "VALUES" +
-            "(%d    , %d    , \'%s\'    , %d    , %d        , %d    , %d)" ;
+            "(?    , ?    , ?    , ?    , ?        , ?    , ?)" ;
 
     public static final String DAO_CLAZZ_SPARK = "org.nchc.bigdata.dao.SparkJobDAOImpl";
     public static final String DAO_CLAZZ_MAPREDUCE = "org.nchc.bigdata.dao.MRJobDAOImpl";

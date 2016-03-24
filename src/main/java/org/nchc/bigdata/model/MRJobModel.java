@@ -291,7 +291,6 @@ public class MRJobModel extends JobModel {
         @SerializedName("finishedMaps")private String finishedMaps;
         @SerializedName("finishedReduces")private String finishedReduces;
         @SerializedName("jobStatus")private String jobStatus;
-        @SerializedName("diagnostics")private String diagnostics;
 
         public String getJobid() {
             return jobid;
@@ -333,13 +332,6 @@ public class MRJobModel extends JobModel {
             this.jobStatus = jobStatus;
         }
 
-        public String getDiagnostics() {
-            return diagnostics;
-        }
-
-        public void setDiagnostics(String diagnostics) {
-            this.diagnostics = diagnostics;
-        }
     }
 
     public abstract class TaskAttempt implements Serializable{

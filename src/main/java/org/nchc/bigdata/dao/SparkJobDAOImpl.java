@@ -7,6 +7,7 @@ import org.nchc.bigdata.model.JobModel;
 import org.nchc.bigdata.model.ResponseJobModel;
 import org.nchc.bigdata.model.SparkJobModel;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -43,9 +44,9 @@ public class SparkJobDAOImpl extends JobDAO{
 
     @Override
     public boolean add(List<JobModel> models) throws SQLException {
-        ResultSet rs = null;
         connection = ConnectionFactory.getConnection(conf);
-        statement = connection.createStatement();
+        PreparedStatement prepStatAddJob = connection.prepareStatement(Const.SQL_TEMPLATE_ADD_JOB);
+        PreparedStatement prepStatAddExec = connection.prepareStatement(Const.SQL_TEMPLATE_ADD_EXECUTOR);
         String query;
         try {
             for (JobModel model : models) {
@@ -62,22 +63,32 @@ public class SparkJobDAOImpl extends JobDAO{
                 String jobName = ((SparkJobModel) model).getAppStart().getName();
                 long start = ((SparkJobModel) model).getAppStart().getTimestamp();
                 long finish = ((SparkJobModel) model).getAppEnd().getTimestamp();
-                query = String.format(Const.SQL_TEMPLATE_ADD_JOB,
-                        epoch, seq, user, jobName, "spark", start, finish, cpuhour);
-                rs = statement.executeQuery(query);
+
+
+                prepStatAddJob.setLong(1, epoch);
+                prepStatAddJob.setLong(2, seq);
+                prepStatAddJob.setString(3, user);
+                prepStatAddJob.setString(4, jobName);
+                prepStatAddJob.setString(5, "spark");
+                prepStatAddJob.setLong(6, start);
+                prepStatAddJob.setLong(7,finish);
+                prepStatAddJob.setLong(8,cpuhour);
+
+                prepStatAddJob.executeUpdate();
 
                 // add executor info
                 List<SparkJobModel.ExecutorAdded> executorList = ((SparkJobModel) model).getExecutorAdd();
                 for(SparkJobModel.ExecutorAdded executor : executorList){
                     long executor_start = Long.parseLong(executor.getTime());
                     int executor_id = Integer.parseInt(executor.getId());
-                    query = String.format(Const.SQL_TEMPLATE_ADD_EXECUTOR, epoch,seq,executor_id,executor_start);
-                    rs = statement.executeQuery(query);
+                    prepStatAddExec.setLong(1,epoch);
+                    prepStatAddExec.setLong(2,seq);
+                    prepStatAddExec.setInt(3,executor_id);
+                    prepStatAddExec.setLong(4,executor_start);
+                    prepStatAddExec.executeUpdate();
                 }
-
             }
         }finally{
-            DBUtil.close(rs);
             DBUtil.close(statement);
             DBUtil.close(connection);
         }

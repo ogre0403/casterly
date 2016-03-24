@@ -10,6 +10,7 @@ import org.nchc.bigdata.parser.IParser;
 import org.nchc.bigdata.filter.LogFileFilter;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
@@ -63,8 +64,8 @@ public class Reader {
         this.logDir = path;
     }
 
-    public List<JobModel> readAllFile() throws IOException{
-        FileStatus[] allFileState = fs.listStatus(this.logDir, filter);
+    public List<JobModel> readAllFile(boolean isRecursive) throws IOException{
+        FileStatus[] allFileState = listFiles(isRecursive);
         List<JobModel> models = new ArrayList<>();
         FSDataInputStream fis = null;
         BufferedReader br = null;
@@ -91,6 +92,36 @@ public class Reader {
         }
     }
 
+    private  FileStatus[] listFiles(boolean isRecursive) throws IOException {
+        if(isRecursive){
+            List<FileStatus> fileStatusesList = new ArrayList<FileStatus>();
+            traverseDirs(fileStatusesList, this.fs, this.logDir, this.filter);
+            FileStatus[] fileStatuses = (FileStatus[]) fileStatusesList.toArray(
+                    new FileStatus[fileStatusesList.size()]);
+            return fileStatuses;
+        }else{
+            return fs.listStatus(this.logDir, filter);
+        }
+    }
+
+    private void traverseDirs(List<FileStatus> fileStatusesList, FileSystem hdfs,
+                              Path inputPath, LogFileFilter filter) throws IOException {
+        // get all the files and dirs in the current dir
+        FileStatus allFiles[] = hdfs.listStatus(inputPath);
+        for (FileStatus aFile: allFiles) {
+            if (aFile.isDir()) {
+                //recurse here
+                traverseDirs(fileStatusesList, hdfs, aFile.getPath(), filter);
+            }
+            else {
+                // check if the pathFilter is accepted for this file
+                if (filter.accept(aFile.getPath())) {
+                    fileStatusesList.add(aFile);
+                }
+            }
+        }
+    }
+
     public < T extends JobModel> T read(BufferedReader br) throws IOException {
         String line;
         parser.clear();
@@ -107,7 +138,7 @@ public class Reader {
             statement = connection.createStatement();
             String query = String.format(
                     Const.SQL_TEMPLATE_UPDATE_LASTPROCESSED, lastProcessedTime);
-            rs = statement.executeQuery(query);
+            statement.executeUpdate(query);
 
         }catch (SQLException sqle){
             logger.warn("save to DB fail");

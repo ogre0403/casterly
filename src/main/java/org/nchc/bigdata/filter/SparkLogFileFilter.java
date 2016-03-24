@@ -14,8 +14,8 @@ public class SparkLogFileFilter extends LogFileFilter {
 
     public SparkLogFileFilter(Configuration conf) throws IOException, SQLException {
         super(conf);
-        long lastTime = getLastProcessedFileModifiedTimeFromDB();
-        setLastProcessedFileModifiedTime(lastTime);
+//        long lastTime = getLastProcessedFileModifiedTimeFromDB();
+//        setLastProcessedFileModifiedTime(lastTime);
 
     }
 

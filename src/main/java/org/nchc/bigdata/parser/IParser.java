@@ -8,7 +8,7 @@ import java.io.IOException;
  * Created by 1403035 on 2016/2/2.
  */
 public interface IParser {
-    boolean parse(String line) throws IOException;
+    boolean parse(String line);
 
     <T extends JobModel> T result();
 

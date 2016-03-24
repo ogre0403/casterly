@@ -17,6 +17,7 @@ import org.nchc.bigdata.parser.IParser;
  */
 public class LogMonitor extends Thread{
 
+    //TODO: from configuration file
     private static int INTERVAL = 10000;
 
     private static Logger logger = Logger.getLogger(LogMonitor.class);
@@ -32,7 +33,8 @@ public class LogMonitor extends Thread{
     public void run(){
         while (isRunning) {
             try {
-                List<JobModel> jobs = reader.readAllFile();
+                List<JobModel> jobs = reader.readAllFile(true);
+                logger.info("Size =  " + jobs.size());
                 daoImpl.add(jobs);
                 Thread.sleep(INTERVAL);
             }catch(InterruptedException e) {

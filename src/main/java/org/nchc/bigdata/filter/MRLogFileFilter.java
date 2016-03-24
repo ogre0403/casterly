@@ -14,8 +14,8 @@ public class MRLogFileFilter extends LogFileFilter {
 
     public MRLogFileFilter(Configuration conf) throws IOException, SQLException {
         super(conf);
-        long lastTime = getLastProcessedFileModifiedTimeFromDB();
-        setLastProcessedFileModifiedTime(lastTime);
+//        long lastTime = getLastProcessedFileModifiedTimeFromDB();
+//        setLastProcessedFileModifiedTime(lastTime);
     }
 
     @Override

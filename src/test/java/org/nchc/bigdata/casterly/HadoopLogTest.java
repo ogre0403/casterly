@@ -28,6 +28,11 @@ public class HadoopLogTest {
     protected static Logger logger = Logger.getLogger(HadoopLogTest.class);
 
     public static String filename = "job_1456378629209_0161-1456902161824-u11lss02-streamjob3184777771968013509.jar-1456902176126-2-0-SUCCEEDED-root.u11lss02-1456902167822.jhist";
+    public static String failFile = "job_1447654482871_1413-1458542643822-scu240-Training+NBC-1458542677415-0-0-FAILED-root.MR-1458542654035.jhist";
+    public static String specialFile = "job_1447654482871_1033-1458116315693-ntunhs-select+_+from+opdte_p+where+id%3D%27cnpay...2000%28Stage-1458116336656-16-0-SUCCEEDED-root.HIVE-1458116326488.jhist";
+    public static String ff = "job_1447654482871_1537-1458618025312-scu240-Classify-1458618059087-0-0-FAILED-root.MR-1458618035650.jhist";
+    public static String ff2 = "job_1447654482871_1538-1458618548345-scu240-Classify-1458618573991-1-1-SUCCEEDED-root.MR-1458618558722.jhist";
+
     public static MRJobModel  mr;
     private static IDatabaseTester databaseTester;
     private static JobDAO impl;
@@ -43,7 +48,7 @@ public class HadoopLogTest {
     @Test
     public void test1() throws IOException {
         MRLogParserImpl mrLogParser = new MRLogParserImpl();
-        InputStream is = SparkLogTest.class.getClass().getResourceAsStream("/" + filename);
+        InputStream is = SparkLogTest.class.getClass().getResourceAsStream("/" + ff2);
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
         String line;
@@ -67,7 +72,7 @@ public class HadoopLogTest {
 
     @Test
     public void test2() throws SQLException {
-        logger.info(impl.calCPUHour(mr));
+        logger.info("==== "+impl.calCPUHour(mr));
     }
 
     @Test
@@ -110,6 +115,7 @@ public class HadoopLogTest {
         Statement statement = connection.createStatement();
         ResultSet rs = statement.executeQuery(query);
         while (rs.next()){
+            logger.info("-------------");
             logger.info(rs.getLong("EPOCH"));
             logger.info(rs.getLong("SEQ"));
             logger.info(rs.getString("TYPE"));

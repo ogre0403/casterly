@@ -1,9 +1,6 @@
 package org.nchc.bigdata.parser;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import org.apache.log4j.Logger;
 import org.nchc.bigdata.casterly.Const;
 import org.nchc.bigdata.casterly.Util;
@@ -54,12 +51,14 @@ public class MRLogParserImpl implements IParser {
     }
 
     @Override
-    public boolean parse(String line) throws IOException {
+    public boolean parse(String line) {
         int i = -1;
         JsonElement element = null;
         try{
             element = parser.parse(line);
-        } catch(Exception e){
+        } catch(JsonSyntaxException e){
+            logger.error("Can not parse following content:");
+            logger.error(line);
             logger.error(Util.traceString(e));
             return false;
         }
@@ -111,15 +110,14 @@ public class MRLogParserImpl implements IParser {
                         eventLogs.addReduceAttemptCompleted(this.gson.fromJson(eventData, MRJobModel.TaskAttemptUnsuccessfulCompletion.class));
                         break;
                     case Const.REDUCE_ATTEMPT_FINISHED:
-                        eventLogs.addMapAttemptCompleted(this.gson.fromJson(eventData, MRJobModel.ReduceAttemptFinished.class));
+                        eventLogs.addReduceAttemptCompleted(this.gson.fromJson(eventData, MRJobModel.ReduceAttemptFinished.class));
                         break;
                 }
             }
         }else {
-            logger.warn("{" + line + "} is not valid json format.");
+            logger.debug("{" + line + "} is not valid json format.");
         }
         return true;
-
     }
 
     @Override

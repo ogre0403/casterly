@@ -109,7 +109,7 @@ public class SparkLogTest {
         Reader sparkReader = new Reader(conf, new Path(DEFAULTEVENTDIR));
         sparkReader.setFilter(sparkFileFilter);
         sparkReader.setParser(new SparkLogParserImpl());
-        List<JobModel> e = sparkReader.readAllFile();
+        List<JobModel> e = sparkReader.readAllFile(true);
         temp = sparkFileFilter.getLastProcessedFileModifiedTime();
         Assert.assertEquals("application_1452487986830_0002", ((SparkJobModel) e.get(0)).getAppStart().getId());
         Assert.assertEquals(e.size(), 1);
@@ -139,7 +139,7 @@ public class SparkLogTest {
         Reader sparkReader = new Reader(conf, new Path(DEFAULTEVENTDIR));
         sparkReader.setFilter(sparkFileFilter);
         sparkReader.setParser(new SparkLogParserImpl());
-        List<JobModel> e = sparkReader.readAllFile();
+        List<JobModel> e = sparkReader.readAllFile(true);
         Assert.assertEquals(e.size(), 2);
 
         for(JobModel model : e){
