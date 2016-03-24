@@ -44,6 +44,7 @@ public class Const {
             "SELECT * FROM APP_SUMMARY WHERE EPOCH = %d AND SEQ = %d";
 
     // add last processed file timestamp into db
+    //TODO: differ MR and Spark by ID
     public static final String SQL_TEMPLATE_UPDATE_LASTPROCESSED =
             "UPDATE LAST_PROCESSED SET LAST = %d WHERE ID = 1" ;
 
