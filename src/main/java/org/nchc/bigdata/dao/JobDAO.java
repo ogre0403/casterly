@@ -28,7 +28,7 @@ public abstract class JobDAO {
     public abstract boolean add(List<JobModel> models) throws SQLException;
     public abstract List<ResponseJobModel> findByTime(long start, long end) throws SQLException;
     public abstract ResponseJobModel findById( long epoch, int seq ) throws SQLException;
-    public abstract void close();
+
 
     public boolean add(JobModel model ) throws SQLException{
         ArrayList<JobModel> single = new ArrayList<>(1);
@@ -74,6 +74,9 @@ public abstract class JobDAO {
 
     }
 
-
+    public void close(){
+        DBUtil.close(statement);
+        DBUtil.close(connection);
+    }
 
 }

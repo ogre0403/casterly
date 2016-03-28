@@ -32,10 +32,6 @@ public class Reader {
     protected FileSystem fs;
     protected Path logDir;
 
-    private Connection connection;
-    private Statement statement;
-
-
     public Reader(){}
 
     public Reader(Configuration config) {
@@ -82,8 +78,7 @@ public class Reader {
             }
         }
 
-        filter.updateLastTimeStamp();
-        if( saveLastProcessedTime(filter.getLastProcessedFileModifiedTime()) == true) {
+        if( filter.saveLastProcessedTime() == true) {
             // LastProcessedTime save to DB ok, return models
             return models;
         }else {
@@ -129,27 +124,6 @@ public class Reader {
             parser.parse(line);
         }
         return parser.result();
-    }
-
-    public boolean saveLastProcessedTime(long lastProcessedTime) {
-        ResultSet rs = null ;
-        try {
-            connection = ConnectionFactory.getConnection(config);
-            statement = connection.createStatement();
-            String query = String.format(
-                    Const.SQL_TEMPLATE_UPDATE_LASTPROCESSED, lastProcessedTime);
-            statement.executeUpdate(query);
-
-        }catch (SQLException sqle){
-            logger.warn("save to DB fail");
-            logger.warn(Util.traceString(sqle));
-            return false;
-        }finally {
-            DBUtil.close(connection);
-            DBUtil.close(statement);
-            DBUtil.close(rs);
-        }
-        return true;
     }
 
     public void close(){

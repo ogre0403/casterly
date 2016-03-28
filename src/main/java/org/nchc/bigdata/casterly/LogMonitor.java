@@ -17,7 +17,6 @@ import org.nchc.bigdata.parser.IParser;
  */
 public class LogMonitor extends Thread{
 
-    //TODO: from configuration file
     private int INTERVAL = 10000;
 
     private static Logger logger = Logger.getLogger(LogMonitor.class);

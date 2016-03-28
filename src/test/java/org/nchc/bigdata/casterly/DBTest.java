@@ -71,13 +71,8 @@ public class DBTest {
         pass_into.set(Const.SQL_PASSWORD, "");
 
         SparkLogFileFilter filter = new SparkLogFileFilter(pass_into);
-        long r1 = filter.getLastProcessedFileModifiedTime();
-        Assert.assertEquals(0,r1);
-        Reader reader = new Reader(pass_into);
-        reader.setFilter(filter);
-        reader.saveLastProcessedTime(999L);
-        long r = filter.getLastProcessedFileModifiedTimeFromDB();
-        Assert.assertEquals(r, 999L);
+        filter.saveLastProcessedTime();
+        filter.getLastProcessedFileModifiedTimeFromDB();
     }
 
 

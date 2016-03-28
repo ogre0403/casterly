@@ -129,6 +129,8 @@ public class MRJobDAOImpl extends JobDAO {
         statement.setLong(1, epoch);
         statement.setLong(2, seq);
         statement.setString(3, user);
+        // remove newline char in Job name
+        jobName = jobName.replaceAll("\\r\\n|\\r|\\n", " ");
         statement.setString(4, jobName);
         statement.setString(5, "mapreduce");
         statement.setLong(6, start);
@@ -217,11 +219,6 @@ public class MRJobDAOImpl extends JobDAO {
             DBUtil.close(connection);
         }
         return resultModel;
-    }
-
-    @Override
-    public void close() {
-        //TODO
     }
 
     private long findTaskNum(long epoch, int seq, String type) {

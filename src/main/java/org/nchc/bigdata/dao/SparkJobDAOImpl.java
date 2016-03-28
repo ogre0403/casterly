@@ -47,7 +47,6 @@ public class SparkJobDAOImpl extends JobDAO{
         connection = ConnectionFactory.getConnection(conf);
         PreparedStatement prepStatAddJob = connection.prepareStatement(Const.SQL_TEMPLATE_ADD_JOB);
         PreparedStatement prepStatAddExec = connection.prepareStatement(Const.SQL_TEMPLATE_ADD_EXECUTOR);
-        String query;
         try {
             for (JobModel model : models) {
                 if (!(model instanceof SparkJobModel)) {
@@ -130,11 +129,6 @@ public class SparkJobDAOImpl extends JobDAO{
             DBUtil.close(connection);
         }
         return resultModel;
-    }
-
-    @Override
-    public void close() {
-        //TODO
     }
 
 }

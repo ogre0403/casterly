@@ -44,13 +44,12 @@ public class Const {
             "SELECT * FROM APP_SUMMARY WHERE EPOCH = %d AND SEQ = %d";
 
     // add last processed file timestamp into db
-    //TODO: differ MR and Spark by ID
     public static final String SQL_TEMPLATE_UPDATE_LASTPROCESSED =
-            "UPDATE LAST_PROCESSED SET LAST = %d WHERE ID = 1" ;
+            "UPDATE LAST_PROCESSED SET LAST = ? WHERE ID = ?";
 
     // Find out the last processed file timestamp
     public static final String SQL_TEMPLATE_GET_LASTPROCESSED =
-            "SELECT LAST FROM LAST_PROCESSED WHERE ID = 1";
+            "SELECT LAST FROM LAST_PROCESSED WHERE ID = ?";
 
     // add map or reduce task into DB
     public static final String SQL_TEMPLATE_ADD_TASK =

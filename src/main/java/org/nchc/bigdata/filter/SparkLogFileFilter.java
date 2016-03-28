@@ -13,10 +13,7 @@ import java.sql.SQLException;
 public class SparkLogFileFilter extends LogFileFilter {
 
     public SparkLogFileFilter(Configuration conf) throws IOException, SQLException {
-        super(conf);
-//        long lastTime = getLastProcessedFileModifiedTimeFromDB();
-//        setLastProcessedFileModifiedTime(lastTime);
-
+        super(conf, "SPARK");
     }
 
     public boolean accept(Path path) {

@@ -5,14 +5,12 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.PathFilter;
 import org.apache.log4j.Logger;
 import org.nchc.bigdata.casterly.Const;
+import org.nchc.bigdata.casterly.Util;
 import org.nchc.bigdata.dao.ConnectionFactory;
 import org.nchc.bigdata.dao.DBUtil;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 /**
  * Created by 1403035 on 2016/2/2.
@@ -22,8 +20,8 @@ public abstract class LogFileFilter implements PathFilter {
     protected static Logger logger = Logger.getLogger(LogFileFilter.class);
     protected FileSystem fs;
     protected Connection connection;
-    protected Statement  statement;
     protected Configuration config;
+    protected String type;
 
     /**
      * The maximum modification time of a file to be accepted in milliseconds
@@ -32,9 +30,11 @@ public abstract class LogFileFilter implements PathFilter {
     private long lastProcessedFileModifiedTime = 0;
     private long largestTimeStamp = 0;
 
-    public LogFileFilter(Configuration conf) throws IOException, SQLException {
+    public LogFileFilter(Configuration conf, String type) throws IOException, SQLException {
         this.config = conf;
-        fs = FileSystem.get(conf);
+        this.fs = FileSystem.get(conf);
+        this.connection = ConnectionFactory.getConnection(this.config);
+        this.type = type;
         long lastTime = getLastProcessedFileModifiedTimeFromDB();
         this.lastProcessedFileModifiedTime = lastTime;
         this.largestTimeStamp = lastTime;
@@ -53,35 +53,43 @@ public abstract class LogFileFilter implements PathFilter {
             return false;
     }
 
-    public void updateLastTimeStamp(){
-        lastProcessedFileModifiedTime = largestTimeStamp;
-    }
-
     public long getLastProcessedFileModifiedTime(){
         return  lastProcessedFileModifiedTime;
     }
 
-//    public void setLastProcessedFileModifiedTime(long lastTime){
-//        this.lastProcessedFileModifiedTime = lastTime;
-//    }
-
     public long getLastProcessedFileModifiedTimeFromDB() throws SQLException {
+        PreparedStatement statement = null;
         ResultSet rs = null ;
         long result = 0L;
         try {
-            connection = ConnectionFactory.getConnection(this.config);
-            statement = connection.createStatement();
-            String query = Const.SQL_TEMPLATE_GET_LASTPROCESSED;
-            rs = statement.executeQuery(query);
-
+            statement = connection.prepareStatement(Const.SQL_TEMPLATE_GET_LASTPROCESSED);
+            statement.setString(1, type);
+            rs = statement.executeQuery();
             if(rs.next()) {
                 result = rs.getLong("LAST");
             }
         }finally {
-            DBUtil.close(connection);
             DBUtil.close(statement);
             DBUtil.close(rs);
         }
-            return result;
+        return result;
+    }
+
+    public boolean saveLastProcessedTime()  {
+        this.lastProcessedFileModifiedTime = this.largestTimeStamp;
+        PreparedStatement prestate= null;
+        try {
+            prestate = connection.prepareStatement(Const.SQL_TEMPLATE_UPDATE_LASTPROCESSED);
+            prestate.setLong(1, this.lastProcessedFileModifiedTime);
+            prestate.setString(2, this.type);
+            prestate.executeUpdate();
+        }catch (SQLException sqle){
+            logger.warn("save to DB fail");
+            logger.warn(Util.traceString(sqle));
+            return false;
+        }finally {
+            DBUtil.close(prestate);
+        }
+        return true;
     }
 }

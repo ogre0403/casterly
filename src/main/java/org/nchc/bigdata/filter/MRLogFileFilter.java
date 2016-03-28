@@ -13,9 +13,7 @@ import java.sql.SQLException;
 public class MRLogFileFilter extends LogFileFilter {
 
     public MRLogFileFilter(Configuration conf) throws IOException, SQLException {
-        super(conf);
-//        long lastTime = getLastProcessedFileModifiedTimeFromDB();
-//        setLastProcessedFileModifiedTime(lastTime);
+        super(conf, "MR");
     }
 
     @Override
