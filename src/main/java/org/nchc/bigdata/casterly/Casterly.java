@@ -55,7 +55,7 @@ public class Casterly {
         };
 
         LogMonitor monitor = null;
-        for(int i = 0; i < 1 ; i++){
+        for(int i = 0; i < 2 ; i++){
             monitor = LogMonitor.createLogMonitor(conf, MONITOR_PATH[i],
                     FILTER_CLAZZ[i], PARSER_CLAZZ[i],DAO_CLAZZ[i],interval
                     );

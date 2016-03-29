@@ -3,13 +3,11 @@ package org.nchc.bigdata.dao;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
 import org.nchc.bigdata.casterly.Const;
+import org.nchc.bigdata.casterly.Util;
 import org.nchc.bigdata.model.JobModel;
 import org.nchc.bigdata.model.ResponseJobModel;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,15 +23,16 @@ public abstract class JobDAO {
     protected Configuration conf;
 
     public abstract long calCPUHour(JobModel model);
-    public abstract boolean add(List<JobModel> models) throws SQLException;
+    public abstract void add(List<JobModel> models);
     public abstract List<ResponseJobModel> findByTime(long start, long end) throws SQLException;
     public abstract ResponseJobModel findById( long epoch, int seq ) throws SQLException;
+    public abstract boolean addOtherDetail(JobModel jobModel);
 
 
-    public boolean add(JobModel model ) throws SQLException{
+    public void add(JobModel model ){
         ArrayList<JobModel> single = new ArrayList<>(1);
         single.add(model);
-        return add(single);
+        add(single);
     }
 
     protected long getEpoch(String app_id){
@@ -73,6 +72,42 @@ public abstract class JobDAO {
         return statement.executeQuery(query);
 
     }
+
+    protected boolean addAppSummary(Connection connection,
+                                  long epoch, long seq,
+                                  String user, String jobName, String queue,
+                                  long start, long finish, long cpuhour,
+                                  JobModel jobModel)  {
+        PreparedStatement statement;
+        try {
+            statement =connection.prepareStatement(Const.SQL_TEMPLATE_ADD_JOB);
+        } catch (SQLException e) {
+            logger.error(Util.traceString(e));
+            return false;
+        }
+        try {
+            statement.setLong(1, epoch);
+            statement.setLong(2, seq);
+            statement.setString(3, user);
+            // remove newline char in Job name
+            jobName = jobName.replaceAll("\\r\\n|\\r|\\n", " ");
+            statement.setString(4, jobName);
+            statement.setString(5, queue);
+            statement.setLong(6, start);
+            statement.setLong(7,finish);
+            statement.setLong(8,cpuhour);
+            statement.executeUpdate();
+            addOtherDetail(jobModel);
+        }catch (SQLException e) {
+            logger.error(Util.traceString(e));
+            return false;
+        } finally {
+            // close local variable, global variable connection SHOULD NOT BE CLOSED HERE.
+            DBUtil.close(statement);
+        }
+        return true;
+    }
+
 
     public void close(){
         DBUtil.close(statement);

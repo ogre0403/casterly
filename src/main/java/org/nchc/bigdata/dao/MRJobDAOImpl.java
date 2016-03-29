@@ -65,18 +65,14 @@ public class MRJobDAOImpl extends JobDAO {
     }
 
     @Override
-    public boolean add(List<JobModel> models) throws SQLException {
+    public void add(List<JobModel> models){
         connection = ConnectionFactory.getConnection(conf);
         MRJobModel mrJobModel;
-        boolean isAddAppOK = false;
-        boolean isAddMapOK = false;
-        boolean isAddReduceOK = false;
         try {
             for (JobModel model : models) {
                 if (!(model instanceof MRJobModel)) {
                     logger.warn("Not SparkJobModel. Can not add by "
                             + this.getClass().getSimpleName() + " class");
-                    return false;
                 }
                 mrJobModel = (MRJobModel) model;
                 // add basic Application info
@@ -94,58 +90,34 @@ public class MRJobDAOImpl extends JobDAO {
                 }
 
                 // save app aummary to DB
-                isAddAppOK = addAppSummary(connection, epoch, seq, user, jobName,
-                        start, finish, cpuhour);
-
-                // save Map task attempt detail to DB
-                isAddMapOK = addTaskDetail(mrJobModel.getMapAttemptStartMap(),
-                        mrJobModel.getMapAttemptFinishMap(),
-                        connection,
-                        epoch,  seq,   "M");
-
-                // save Reduce task attempt detail to DB
-                isAddReduceOK = addTaskDetail(mrJobModel.getReduceAttemptStartMap(),
-                        mrJobModel.getReduceAttemptFinishMap(),
-                        connection,
-                        epoch, seq, "R");
+                addAppSummary(connection, epoch, seq, user, jobName, "mapreduce",
+                    start, finish, cpuhour, model);
             }
         }finally{
             DBUtil.close(connection);
         }
-        return isAddAppOK && isAddMapOK && isAddReduceOK;
     }
 
-    private boolean addAppSummary(Connection connection,
-                                  long epoch, long seq,
-                                  String user, String jobName,
-                                  long start, long finish, long cpuhour) throws SQLException {
-        PreparedStatement statement;
-        try {
-            statement =connection.prepareStatement(Const.SQL_TEMPLATE_ADD_JOB);
-        } catch (SQLException e) {
-            logger.error(Util.traceString(e));
-            return false;
-        }
-        statement.setLong(1, epoch);
-        statement.setLong(2, seq);
-        statement.setString(3, user);
-        // remove newline char in Job name
-        jobName = jobName.replaceAll("\\r\\n|\\r|\\n", " ");
-        statement.setString(4, jobName);
-        statement.setString(5, "mapreduce");
-        statement.setLong(6, start);
-        statement.setLong(7,finish);
-        statement.setLong(8,cpuhour);
-        try {
-            statement.executeUpdate();
-        }catch (SQLException e) {
-            logger.error(Util.traceString(e));
-            return false;
-        } finally {
-            // close local variable, global variable connection SHOULD NOT BE CLOSED HERE.
-            DBUtil.close(statement);
-        }
-        return true;
+    @Override
+    public boolean addOtherDetail(JobModel jobModel) {
+        MRJobModel mrJobModel = (MRJobModel) jobModel;
+        // add basic Application info
+        long epoch = getEpoch(mrJobModel.getJobSubmitted().getJobid());
+        long seq = getSeq(mrJobModel.getJobSubmitted().getJobid());
+
+        // save Map task attempt detail to DB
+        boolean isM_OK = addTaskDetail(mrJobModel.getMapAttemptStartMap(),
+                mrJobModel.getMapAttemptFinishMap(),
+                connection,
+                epoch,  seq,   "M");
+
+        // save Reduce task attempt detail to DB
+        boolean isR_OK = addTaskDetail(mrJobModel.getReduceAttemptStartMap(),
+                mrJobModel.getReduceAttemptFinishMap(),
+                connection,
+                epoch, seq, "R");
+
+        return isM_OK && isR_OK;
     }
 
     private boolean addTaskDetail(Map<String, MRJobModel.TaskAttemptStarted> startedMap,
