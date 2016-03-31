@@ -9,9 +9,9 @@ import os
 
 ROOT_LOG_DIR = "/home/ogre/casterly"
 
-MYSQL_URL="localhost"
-MYSQL_USER="root"
-MYSQL_PW="ogre0403"
+MYSQL_URL="172.16.1.18"
+MYSQL_USER="casterly"
+MYSQL_PW="casterly@hcgwc112"
 MYSQL_DB="casterly"
 
 QueryApp = "SELECT * FROM APP_SUMMARY WHERE FINISH >= %s AND FINISH <= %s"

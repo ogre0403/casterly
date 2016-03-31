@@ -1,3 +1,7 @@
+CREATE DATABASE casterly;
+create user 'casterly'@'172.16.1.12' identified by 'casterly@hcgwc112';
+grant all on casterly.* to 'casterly'@'%';
+USE casterly;
 CREATE TABLE APP_SUMMARY (
   EPOCH BIGINT,
   SEQ SMALLINT,
