@@ -42,4 +42,26 @@ public class DBUtil {
             }
         }
     }
+
+    /**
+     * Check the connection status.
+     *
+     * @param connection
+     *            the connection to check
+     * @return if the connection is ready
+     */
+    public static boolean checkConnAndCloseIfUnvalid(Connection connection){
+        if (connection == null)
+            return false;
+
+        try{
+            if(!connection.isValid(1)) {
+                return false;
+            }
+        }catch(SQLException e) {
+            logger.error(Util.traceString(e));
+        }
+
+        return true;
+    }
 }

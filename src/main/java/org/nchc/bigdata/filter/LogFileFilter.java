@@ -58,6 +58,9 @@ public abstract class LogFileFilter implements PathFilter {
     }
 
     public long getLastProcessedFileModifiedTimeFromDB() throws SQLException {
+        if(DBUtil.checkConnAndCloseIfUnvalid(this.connection) == false){
+            this.connection = ConnectionFactory.getConnection(this.config);
+        }
         PreparedStatement statement = null;
         ResultSet rs = null ;
         long result = 0L;
@@ -76,6 +79,9 @@ public abstract class LogFileFilter implements PathFilter {
     }
 
     public boolean saveLastProcessedTime()  {
+        if(DBUtil.checkConnAndCloseIfUnvalid(this.connection) == false){
+            this.connection = ConnectionFactory.getConnection(this.config);
+        }
         this.lastProcessedFileModifiedTime = this.largestTimeStamp;
         PreparedStatement prestate= null;
         try {
