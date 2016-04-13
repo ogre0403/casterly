@@ -18,6 +18,8 @@ QueryApp = "SELECT * FROM APP_SUMMARY WHERE FINISH >= %s AND FINISH <= %s"
 QueryExecutor = "select count(*) from EXECUTOR_DETAIL  where EPOCH = %s AND SEQ = %s"
 QueryString = "select count(*) from TASK_DETAIL where EPOCH = %s AND SEQ = %s AND TYPE = %s"
 
+# users who execute job will not be charge
+WhiteList = ["ogre", "waue", "c00ctn00", "n00chl00"]
 
 # generate in checkInput()
 MONTH_LOG_DIR = ""
@@ -55,6 +57,8 @@ def outputLog(start_ts, end_ts):
             output = [None] * 14
             # login-name
             output[0] = row[2]
+            if(output[0] in WhiteList):
+                break
             # q-name
             output[1] = row[4]
             # job-name
