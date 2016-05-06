@@ -7,7 +7,7 @@ import time
 import sys
 import os
 
-ROOT_LOG_DIR = "/home/ogre/casterly"
+ROOT_LOG_DIR = "/home/acctadm1/qdaily"
 
 MYSQL_URL="172.16.1.18"
 MYSQL_USER="casterly"
@@ -76,7 +76,7 @@ def outputLog(start_ts, end_ts):
                 output[7], output[8] = queryMapAndReduce(row[0], row[1])
             elif (row[4] == "spark"):
                 output[7] = queryExecutor(row[0], row[1])
-                output[8] = 0
+                output[8] = "0"
             else:
                 # min-cpu (number of map)
                 output[7] = "0"
