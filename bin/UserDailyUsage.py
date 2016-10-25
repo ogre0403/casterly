@@ -58,7 +58,7 @@ def outputLog(start_ts, end_ts):
             # login-name
             output[0] = row[2]
             if(output[0] in WhiteList):
-                break
+                continue
             # q-name
             output[1] = row[4]
             # job-name
