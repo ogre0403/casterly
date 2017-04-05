@@ -1,10 +1,10 @@
 CREATE DATABASE casterly;
-create user 'casterly'@'172.16.1.12' identified by 'casterly@hcgwc112';
+create user 'casterly'@'localhost' identified by 'casterly_passwd';
 grant all on casterly.* to 'casterly'@'%';
 USE casterly;
 CREATE TABLE APP_SUMMARY (
   EPOCH BIGINT,
-  SEQ SMALLINT,
+  SEQ BIGINT,
   USER CHAR(16),
   JOBNAME CHAR(255),
   QUEUE CHAR(32),
@@ -15,7 +15,7 @@ CREATE TABLE APP_SUMMARY (
 );
 CREATE TABLE TASK_DETAIL (
   EPOCH BIGINT,
-  SEQ SMALLINT,
+  SEQ BIGINT,
   TYPE CHAR(1),
   TASKID BIGINT,
   ATTEMPTID SMALLINT,
@@ -25,7 +25,7 @@ CREATE TABLE TASK_DETAIL (
 );
 CREATE TABLE EXECUTOR_DETAIL (
   EPOCH BIGINT,
-  SEQ SMALLINT,
+  SEQ BIGINT,
   ID SMALLINT,
   START BIGINT,
   PRIMARY KEY (EPOCH, SEQ, ID)
