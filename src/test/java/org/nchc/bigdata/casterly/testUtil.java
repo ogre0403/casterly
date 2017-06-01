@@ -53,7 +53,7 @@ public class testUtil {
 
         PreparedStatement executor_detail = connection.prepareStatement(
                 "CREATE TABLE EXECUTOR_DETAIL (" +
-                        "EPOCH BIGINT, SEQ SMALLINT, ID SMALLINT, START BIGINT)");
+                        "EPOCH BIGINT, SEQ SMALLINT, ID SMALLINT, START BIGINT, FINISH BIGINT)");
         executor_detail.execute();
         executor_detail.close();
 

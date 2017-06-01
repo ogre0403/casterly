@@ -22,6 +22,7 @@ public class SparkLogParserImpl implements IParser {
     public final static String JOB_START       = "SparkListenerJobStart";
     public final static String STAGE_SUBMIT    = "SparkListenerStageSubmitted";
     public final static String EXECUTOR_ADD    = "SparkListenerExecutorAdded";
+    public final static String EXECUTOR_REMOVED    = "SparkListenerExecutorRemoved";
     public final static String TASK_START      = "SparkListenerTaskStart";
     public final static String TASK_END        = "SparkListenerTaskEnd";
     public final static String STAGE_COMPLETED = "SparkListenerStageCompleted";
@@ -53,6 +54,7 @@ public class SparkLogParserImpl implements IParser {
         this.eventNames.add(APP_START);
         this.eventNames.add(APP_END);
         this.eventNames.add(EXECUTOR_ADD);
+        this.eventNames.add(EXECUTOR_REMOVED);
         this.eventNames.add(TASK_START);
         this.eventNames.add(TASK_END);
     }
@@ -91,6 +93,9 @@ public class SparkLogParserImpl implements IParser {
                         break;
                     case EXECUTOR_ADD:
                         this.eventLogs.addExecutorAdd(this.gson.fromJson(element, SparkJobModel.ExecutorAdded.class));
+                        break;
+                    case EXECUTOR_REMOVED:
+                        this.eventLogs.addExecutorRemoved(this.gson.fromJson(element, SparkJobModel.ExecutorRemoved.class));
                         break;
                     case TASK_START:
                         this.eventLogs.addTaskStart(this.gson.fromJson(element, SparkJobModel.TaskStart.class));

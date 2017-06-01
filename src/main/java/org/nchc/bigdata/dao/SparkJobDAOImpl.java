@@ -12,7 +12,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by 1403035 on 2016/2/17.
@@ -29,13 +31,21 @@ public class SparkJobDAOImpl extends JobDAO{
 
     @Override
     public long calCPUHour(JobModel model) {
-        SparkJobModel.AppEnd appEnd = ((SparkJobModel) model).getAppEnd();
-        long endTS = appEnd.getTimestamp();
         long totalTime = 0;
         if (model instanceof SparkJobModel){
-            List<SparkJobModel.ExecutorAdded> executors = ((SparkJobModel) model).getExecutorAdd();
-            for(SparkJobModel.ExecutorAdded executor : executors){
-                totalTime = totalTime + (endTS - Long.parseLong(executor.getTime()));
+            Map<String, SparkJobModel.ExecutorAdded> executorAdds = ((SparkJobModel) model).getExecutorAdd();
+            Map<String, SparkJobModel.ExecutorRemoved> executorRemoveds = ((SparkJobModel) model).getExecutorRemoved();
+
+            Iterator<Map.Entry<String, SparkJobModel.ExecutorRemoved>> iter = executorRemoveds.entrySet().iterator();
+            while (iter.hasNext()) {
+                Map.Entry<String, SparkJobModel.ExecutorRemoved> entry = iter.next();
+                String executor_id = entry.getKey();
+                SparkJobModel.ExecutorRemoved executorrRemove = entry.getValue();
+
+                SparkJobModel.ExecutorAdded executorAdd= executorAdds.get(executor_id);
+
+                totalTime = totalTime +
+                        Long.parseLong((executorrRemove.getTime())) - Long.parseLong(executorAdd.getTime());
             }
             return totalTime;
         }
@@ -81,13 +91,17 @@ public class SparkJobDAOImpl extends JobDAO{
         String job_id = ((SparkJobModel) jobModel).getAppStart().getId();
         long epoch = getEpoch(job_id);
         long seq = getSeq(job_id);
-        return addExecutorDetail(connection, ((SparkJobModel) jobModel).getExecutorAdd(), epoch, seq);
+        return addExecutorDetail(connection,
+                                ((SparkJobModel) jobModel).getExecutorAdd(),
+                                ((SparkJobModel) jobModel).getExecutorRemoved(),
+                                epoch, seq);
     }
 
     private boolean addExecutorDetail(Connection connection,
-                                      List<SparkJobModel.ExecutorAdded> executorList,
+                                      Map<String, SparkJobModel.ExecutorAdded> executorAdd,
+                                      Map<String, SparkJobModel.ExecutorRemoved> executorRemoved,
                                       long epoch, long seq){
-        PreparedStatement prepStatAddExec = null;
+        PreparedStatement prepStatAddExec;
         try {
             prepStatAddExec = connection.prepareStatement(Const.SQL_TEMPLATE_ADD_EXECUTOR);
         }catch (SQLException sqle){
@@ -96,18 +110,23 @@ public class SparkJobDAOImpl extends JobDAO{
         }
 
         try{
-            for(SparkJobModel.ExecutorAdded executor : executorList){
-                long executor_start = Long.parseLong(executor.getTime());
-                int executor_id = Integer.parseInt(executor.getId());
-                    prepStatAddExec.setLong(1, epoch);
-                    prepStatAddExec.setLong(2, seq);
-                    prepStatAddExec.setInt(3, executor_id);
-                    prepStatAddExec.setLong(4, executor_start);
-                    prepStatAddExec.executeUpdate();
+            Iterator<Map.Entry<String, SparkJobModel.ExecutorRemoved>> iter = executorRemoved.entrySet().iterator();
+            while (iter.hasNext()) {
+                Map.Entry<String, SparkJobModel.ExecutorRemoved> entry = iter.next();
+
+                int executor_id = Integer.parseInt(entry.getKey());
+                long executor_start = Long.parseLong(executorAdd.get(entry.getKey()).getTime());
+                long executor_end = Long.parseLong(entry.getValue().getTime());
+                prepStatAddExec.setLong(1, epoch);
+                prepStatAddExec.setLong(2, seq);
+                prepStatAddExec.setInt(3, executor_id);
+                prepStatAddExec.setLong(4, executor_start);
+                prepStatAddExec.setLong(5, executor_end);
+                prepStatAddExec.executeUpdate();
             }
         }catch (SQLException sqle){
             logger.error(Util.traceString(sqle));
-                return false;
+            return false;
         }finally {
             DBUtil.close(prepStatAddExec);
         }

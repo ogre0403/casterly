@@ -19,13 +19,17 @@ public class SparkJobModel extends JobModel {
     private List<JobEnd> jobEnd;
     private List<StageSubmit> stageSubmit;
     private List<StageCompleted> stageComplete;
-    private List<ExecutorAdded> executorAdd;
+//    private List<ExecutorAdded> executorAdd;
+    private Map<String, ExecutorAdded> executorAdd;
+//    private List<ExecutorRemoved> executorRemoved;
+    private Map<String, ExecutorRemoved> executorRemoved;
     private List<BlockManager> blockManager;
     private List<TaskStart> taskStart;
     private List<TaskEnd> taskEnd;
 
     public SparkJobModel(){
-        this.setExecutorAdd(new ArrayList<ExecutorAdded>());
+        this.setExecutorAdd(new HashMap<String, ExecutorAdded>());
+        this.setExecutorRemoved(new HashMap<String, ExecutorRemoved>());
         this.setJobStart(new ArrayList<JobStart>());
         this.setJobEnd(new ArrayList<JobEnd>());
         this.setStageSubmit(new ArrayList<StageSubmit>());
@@ -61,16 +65,28 @@ public class SparkJobModel extends JobModel {
         this.taskEnd = taskEnd;
     }
 
-    public List<ExecutorAdded> getExecutorAdd() {
+    public Map<String, ExecutorAdded> getExecutorAdd() {
         return executorAdd;
     }
 
-    public void setExecutorAdd(List<ExecutorAdded> executorAdd) {
+    public void setExecutorAdd(Map<String, ExecutorAdded> executorAdd) {
         this.executorAdd = executorAdd;
     }
 
     public void addExecutorAdd(ExecutorAdded executorAdd) {
-        this.executorAdd.add(executorAdd);
+        this.executorAdd.put(executorAdd.getId(), executorAdd);
+    }
+
+    public Map<String, ExecutorRemoved> getExecutorRemoved() {
+        return executorRemoved;
+    }
+
+    public void setExecutorRemoved(Map<String, ExecutorRemoved> executorRemoved) {
+        this.executorRemoved = executorRemoved;
+    }
+
+    public void addExecutorRemoved(ExecutorRemoved executorRemoved) {
+        this.executorRemoved.put(executorRemoved.getId(), executorRemoved);
     }
 
     public List<JobStart> getJobStart() {
@@ -158,6 +174,7 @@ public class SparkJobModel extends JobModel {
         stageSubmit.clear();
         stageComplete.clear();
         executorAdd.clear();
+        executorRemoved.clear();
         blockManager.clear();
         taskStart.clear();
         taskEnd.clear();
@@ -273,6 +290,38 @@ public class SparkJobModel extends JobModel {
             this.info = info;
         }
     }
+
+    //{"Event":"SparkListenerExecutorRemoved","Timestamp":1495647266668,"Executor ID":"113","Removed Reason":"remote Rpc client disassociated"}
+    public class ExecutorRemoved implements Serializable{
+        @SerializedName("Timestamp")private String time;
+        @SerializedName("Executor ID")private String id;
+        @SerializedName("Removed Reason")private String info;
+
+        public String getTime() {
+            return time;
+        }
+
+        public void setTime(String time) {
+            this.time = time;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getInfo() {
+            return info;
+        }
+
+        public void setInfo(String info) {
+            this.info = info;
+        }
+    }
+
 
     //{"Event":"SparkListenerTaskStart","Stage ID":0,"Stage Attempt ID":0,"Task Info":{"Task ID":0,"Index":2,"Attempt":0,"Launch Time":1440399209585,"Executor ID":"1","Host":"server-a5","Locality":"NODE_LOCAL","Speculative":false,"Getting Result Time":0,"Finish Time":0,"Failed":false,"Accumulables":[]}}
     public class TaskStart implements Serializable{

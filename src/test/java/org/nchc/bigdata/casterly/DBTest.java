@@ -25,7 +25,9 @@ import java.sql.SQLException;
  */
 public class DBTest {
     private static Logger logger = Logger.getLogger(DBTest.class);
-    private static String SUCCESSLOG = "application_1452487986830_0002_1";
+//    private static String SUCCESSLOG = "application_1491786134915_9837";
+    private static String SUCCESSLOG = "application_1491786134915_10290";
+//    private static String SUCCESSLOG = "application_1491786134915_9755";
     private static IDatabaseTester databaseTester;
 
 
@@ -58,12 +60,12 @@ public class DBTest {
         JobDAO impl = JoBDAOFactory.getJobDAO(Const.DAO_CLAZZ_SPARK, pass_into);
         impl.add(r);
 
-        ResponseJobModel rmode = impl.findById(1452487986830L, 2);
+        ResponseJobModel rmode = impl.findById(1491786134915L, 10290);
         System.out.println(rmode.getCpuHour());
         System.out.println(rmode.getExecutor_num());
     }
 
-    @Test
+    @Ignore
     public void testInitializeFilter() throws IOException, SQLException {
         Configuration pass_into = new Configuration();
         pass_into.set(Const.SQL_URL,"jdbc:hsqldb:mem:mymemdb");

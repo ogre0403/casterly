@@ -21,9 +21,9 @@ public class Const {
     // Insert Executor info of a Spark application
     public static final String SQL_TEMPLATE_ADD_EXECUTOR = "INSERT INTO "+
             "EXECUTOR_DETAIL" +
-            "(EPOCH ,SEQ    ,ID , START)"+
+            "(EPOCH ,SEQ    ,ID , START, FINISH)"+
             "VALUES " +
-            "(?    ,?     ,?, ?    )";
+            "(?    ,?     ,?, ?   ,? )";
 
     // Find out the number of executor of a Spark Application
     public static final String SQL_TEMPLATE_EXECOUNT_COUNT =
