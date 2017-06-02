@@ -84,7 +84,7 @@ def outputLog(start_ts, end_ts):
                 output[8] = "0"
 
             # real-cpu ( set to 1)
-            output[9] = "1"
+            output[9] = str(int(output[7]) + int(output[8]))
             # waiting-time
             output[10] = "0"
             # wall-clock-time

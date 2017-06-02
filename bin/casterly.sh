@@ -3,7 +3,7 @@
 CASTERLY_HOME=$(dirname $0)/../
 CLASSPATH=`hadoop classpath`
 CASTERLY_PID=$CASTERLY_HOME/casterly.pid
-JAVA=/opt/java/bin/java
+JAVA=`which java`
 
 startStop=$1
 
