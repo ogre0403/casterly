@@ -19,9 +19,7 @@ public class SparkJobModel extends JobModel {
     private List<JobEnd> jobEnd;
     private List<StageSubmit> stageSubmit;
     private List<StageCompleted> stageComplete;
-//    private List<ExecutorAdded> executorAdd;
     private Map<String, ExecutorAdded> executorAdd;
-//    private List<ExecutorRemoved> executorRemoved;
     private Map<String, ExecutorRemoved> executorRemoved;
     private List<BlockManager> blockManager;
     private List<TaskStart> taskStart;

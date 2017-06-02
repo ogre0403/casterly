@@ -134,6 +134,7 @@ public class SparkLogParserImpl implements IParser {
     }
 
     public SparkJobModel result(){
-        return (SparkJobModel) eventLogs.deepClone();
+//        return (SparkJobModel) eventLogs.deepClone();
+        return eventLogs;
     }
 }
