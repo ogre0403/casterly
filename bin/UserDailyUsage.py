@@ -73,8 +73,10 @@ def outputLog(start_ts, end_ts):
             output[6] = "P"
 
             if (row[4] == "mapreduce"):
+                # (number of map, number of reduce)
                 output[7], output[8] = queryMapAndReduce(row[0], row[1])
             elif (row[4] == "spark"):
+                # (number of executor, 0)
                 output[7] = queryExecutor(row[0], row[1])
                 output[8] = "0"
             else:
@@ -83,14 +85,15 @@ def outputLog(start_ts, end_ts):
                 # max-cpu (number of reduce)
                 output[8] = "0"
 
-            # real-cpu ( set to 1)
-            output[9] = str(int(output[7]) + int(output[8]))
+            total_cpu = int(output[7]) + int(output[8])
+            # real-cpu ( total cpu core)
+            output[9] = str(total_cpu)
             # waiting-time
             output[10] = "0"
             # wall-clock-time
-            output[11] = str(row[7] / 1000)
+            output[11] = str(row[7] / 1000 / total_cpu) if total_cpu != 0 else '0'
             # cpu-time
-            output[12] = str(row[7] / 1000)
+            output[12] = str(row[7] / 1000 / total_cpu) if total_cpu != 0 else '0'
             output[13] = "0"
             # print ":".join(output)
             count = count + 1
